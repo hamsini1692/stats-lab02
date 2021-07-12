@@ -1,10 +1,3 @@
----
-title: "rubric"
-author: 'w203: Statistics for Data Science'
-date: "July 12, 2021"
-output: html_document
----
-
 # Rubric
 
 ## Introduction (4 levels) 

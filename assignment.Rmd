@@ -1,5 +1,5 @@
 ---
-title: "Lab 2: Vacations and Tourism in Summer 2021"
+title: "Lab 2: Vacations and Vaccinations, Summer 2021"
 author: 'w203: Statistics for Data Science'
 date: "July 12, 2021"
 output: html_document

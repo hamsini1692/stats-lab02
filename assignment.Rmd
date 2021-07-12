@@ -1,7 +1,7 @@
 ---
-title: "Lab 2: Regression to Study the Spread of Covid-19"
+title: "Lab 2: Vacations and Tourism in Summer 2021"
 author: 'w203: Statistics for Data Science'
-date: "10/28/2020"
+date: "July 12, 2021"
 output: html_document
 ---
 
@@ -11,13 +11,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-In this lab, you will apply what you are learning about linear regression to study the spread of COVID-19. Your task is to select a research question, then conduct a regression study to analyze it. 
+You and your team are the data scientists for the State, and are reporting to the agency head for tourism. (We like to think of the person you are reporting to as being [Mr. Mayor from Portlandia](https://youtu.be/zI6FEQKo9uE).) 
 
-Your research question must focus attention on a specific measurement goal. It is not enough to say "we are looking for policies that help stop COVID-19" (That would be a fishing expedition). Instead, use your introduction to motivate a specific effect for measurement. 
+The tourism board has heard that students in the MIDS program have been working hard over the summer and could use a vacation. In this lab, you will apply what you have learned about linear regression to study vacations in the summer of 2021. 
 
-Once you have a measurement goal, you will build a set of linear models that are tailored to that goal, and display them in a well formatted regression table. You will finally use your conclusion to distill important conclusions from your estimates.
+It would be impossible to understand travel this summer without also talking about the impacts of covid-19. Travel this summer likely to be quite different from travel last summer; even travel *within* this summer might have substantial variations from month to month due to changes in policies that affect personal interactions. 
 
-This is a group assignment. Your live session instructor will coordinate the formation of groups. We would like to encourage teams to focus on using the lab as a way to learn how to work as a team of collaborating data scientists on shared code; how to clean and organize data; and, how to present work in a compelling way. As a result, we encourage teams to allow individuals to take risks and be supportive in the face of successes and failures. Create an opportunity for people who want to improve a particular skill to do so -- this might be project coordination, management of code through git, plotting, or any of the many aspects that you'll work on. *We hope that you can support and learn from one another through this team-based project.* 
+**Your task is to select and develop a research question, then conduct a regression study to analyze it.** Your research question must focus attention on a *specific* question or goal. For this, you will have to use the skills you have developed in RDADA to work on a question that can be addressed using a modeling approach. It is not enough to say "we are examining how policies affect tourism", or "we are examining how covid has affected tourism"; both of these types of questions are not amenable to a modeling based approach and would likely generate a fishing expedition. Instead, you and the team will have to use your understanding of, intuition about, and data from the world to propose a question and generate an answer. 
+
+For example, your team might be interested in craft-beer tourism (this is *big-business* in parts of the United States). A starting place for your investigation might be collecting information and data about the industry over the past several years, then examining the impacts of both covid-19 and master's degree enrollment on individual's interest in beer-tourism, and then proposing *and evaluating* specific models in pursuit of your goal. As an example, after coming to understand the landscape, you and your team might evaluate a policy that subsidizes rent on warehouse space for [https://www.ghosttownbrewing.com](craft-breweries) to use for brewing and retail.
+
+Once you have a measurement goal, you will build a set of linear models that are tailored to that goal, and will present them to your readers in a manner that allows the reader to learn as much as possible. This might be a well formatted regression table or a series of tables and charts. 
+
+**This is a group assignment.** Your live session instructor will coordinate the formation of groups. We would like to encourage teams to focus on using the lab as a way to learn how to work as a team of collaborating data scientists on shared code; how to clean and organize data; and, how to present work in a compelling way. As a result, we encourage teams to allow individuals to take risks and be supportive in the face of successes and failures. Create an opportunity for people who want to improve a particular skill to do so -- this might be project coordination, management of code through git, plotting, or any of the many aspects that you'll work on. *We hope that you can support and learn from one another through this team-based project.* 
 
 # Deliverables 
 
@@ -31,15 +37,19 @@ This is a group assignment. Your live session instructor will coordinate the for
 
 # Data
 
-We recommend the following data sources:
+You are not required to use any specific data source; nor are you prohibited from using any specific data source. You are allowed to add extra variables from other sources, but for each additional data source, the team will have to document and cite the source.
 
-- [COVID-19 US State Policy Database](www.tinyurl.com/statepolicies) A database of state policy responses to the pandemic, compiled by researchers at the Boston University School of Public Health.
-- [COVID-19 Community Mobility Report](https://www.google.com/covid19/mobility/) A Google dataset that includes state-level measurements of individual mobility
+Because of the limitations of models we have studied in the course, we recommend that data for analysis be aggregated to either the state- or county-level. Also, note that in the course we have not dealt with *time* in any way. Descriptive statistics 
+
+As a starting place, your team might consider these data sources.
+
 - [The American Community Survey](https://data.census.gov/cedsci/table?q=ACS&g=0100000US.04000.001&tid=ACSDP1Y2019.DP05&moe=false&hidePreview=true) This product from the US Census Bureau contains state-level demographics and other indicators of general interest.
-
-If you want to, you are allowed to add extra variables from other sources. However, this is not necessary, and we will not assign any bonus points to teams that derive unique data, as our focus is on statistics and statistical writing.
-
-All data must be compiled into state-by-state metrics for regression analysis.
+- [Airbnb Booking Data](http://insideairbnb.com/get-the-data.html) This data is not published by Airbnb; rather, it is scraped and posted by an [advocacy group](http://insideairbnb.com/about.html). (The group seems to advocate for the reduction in Airbnb short-term rentals; knowing this motivation can help you to evaluate the source of the data.) 
+- [CDC Data on Vaccinations](https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh) This data product from the US Centers for Disease Control contains county-level information about vaccination rates. More description of this data is available [here](https://covid.cdc.gov/covid-data-tracker/#vaccinations-county-view)
+- [COVID-19 US State Policy Database](www.tinyurl.com/statepolicies) A database of state policy responses to the pandemic, compiled by researchers at the Boston University School of Public Health.
+- [Bureau of Transportation Statistics](https://data.bts.gov/Research-and-Statistics/Trips-by-Distance/w96p-f2qv) A dataset with the number of trips of a given distance (i.e. 1-3 miles; 250-500 miles) taken by residents of a specified geography (i.e. a county)  
+- [COVID-19 Community Mobility Report](https://www.google.com/covid19/mobility/) A dataset collected by Google that includes state-level measurements of individual mobility, by categeory (e.g. )
+- [NORC Covid Impact Survey](https://www.covid-impact.org/project-overview) In June 2020, the National Opinion Research Council surveyed US residents and asked about their lives during the Pandemic.
 
 # Final Project Components {.tabset}
 

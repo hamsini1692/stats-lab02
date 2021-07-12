@@ -61,7 +61,7 @@ Overall, is each step in the model building process supported by EDA? Is the out
 3. A report that scores either in the second or third level will have serious errors in its reasoning about a model. It might use data that is an inappropriate level, or a model that doesn’t inform the question at hand. There is considerable room for improvement in an answer of this form. 
 1. A report that scores in the first level will have made very serious errors in its reasoning about a model. This might mean using a model that is unrelated to the question; or a model that is inappropriate to the data or some other very serious error that precludes any result from this model being able to inform the research question. 
 
-### model Results and Interpretation (6 levels) 
+### Model Results and Interpretation (6 levels) 
 
 6. A report that scores in the top level will have interpreted the results of the model appropriately, drawn a conclusion about statistical significance; placed these results in context with some statement about practical significance that is compelling to the reader; and will have done so in a way that is clear, concise, and correct. 
 5. A report that scores in the fifth level  will have interpreted the results of the model appropriately, drawn a conclusion about statistical significance; placed these results in context with some statement about practical significance that is compelling to the reader. Keeping this from full points might be some lack of clarity or concision; or some very slight error in the interpretation of the model. 
@@ -69,7 +69,6 @@ Overall, is each step in the model building process supported by EDA? Is the out
 3. A report that scores in the third level will have some considerable errors in the modeling. Either the results will be inappropriately interpreted -- statistically significant results might be interpreted as non-significant for example -- or will have failed to successfully connect the results of the model with an interpretation of what these results mean. 
 2. A report that scores in the second level will have very serious issues with how the model results are interpreted. They may be wrong; non-existent; mis-characterized; or some other such very serious issue. If there is any interpretation, it might be incorrect or unhelpful. 
 1. A report that scores in the first level will have very serious issues with how the model results are interpreted. They may be wrong; non-existent; mis-characterized; or some other such very serious issue. If there is any interpretation, it might be incorrect or unhelpful. 
-
 
 ## Assumptions of the Model (4 levels)
 

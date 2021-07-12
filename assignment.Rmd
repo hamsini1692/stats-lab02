@@ -19,7 +19,11 @@ It would be impossible to understand travel this summer without also talking abo
 
 **Your task is to select and develop a research question, then conduct a regression study to analyze it.** Your research question must focus attention on a *specific* question or goal. For this, you will have to use the skills you have developed in RDADA to work on a question that can be addressed using a modeling approach. It is not enough to say "we are examining how policies affect tourism", or "we are examining how covid has affected tourism"; both of these types of questions are not amenable to a modeling based approach and would likely generate a fishing expedition. Instead, you and the team will have to use your understanding of, intuition about, and data from the world to propose a question and generate an answer. 
 
-For example, your team might be interested in craft-beer tourism (this is *big-business* in parts of the United States). A starting place for your investigation might be collecting information and data about the industry over the past several years, then examining the impacts of both covid-19 and master's degree enrollment on individual's interest in beer-tourism, and then proposing *and evaluating* specific models in pursuit of your goal. As an example, after coming to understand the landscape, you and your team might evaluate a policy that subsidizes rent on warehouse space for [https://www.ghosttownbrewing.com](craft-breweries) to use for brewing and retail.
+
+## Example of a Research Question 
+Suppose that your team is interested in craft-beer tourism (this is *big-business* in parts of the United States). A starting place for your investigation might be collecting information and data about the industry over the past several years, then inductively examining the impacts of both covid-19 and master's degree enrollment on beer-tourism. Analysis at this level is not specific enough to be actional by a model, and so your team will have to continue to refine your focus to propose a specific question. 
+
+After coming to understand the landscape, you and your team might propose the following research question: *What are the effects of subsidies that reduce the cost of rent for craft-breweries to rent warehouse space?"* The team reasons that such subsidies should increase the number of breweries in operation, the number of barrels of craft-beer brewed within the subsidized geography, and should also increase the number of Airbnb listings and carshare rides in the area of the subsidies.
 
 Once you have a measurement goal, you will build a set of linear models that are tailored to that goal, and will present them to your readers in a manner that allows the reader to learn as much as possible. This might be a well formatted regression table or a series of tables and charts. 
 
@@ -39,7 +43,7 @@ Once you have a measurement goal, you will build a set of linear models that are
 
 You are not required to use any specific data source; nor are you prohibited from using any specific data source. You are allowed to add extra variables from other sources, but for each additional data source, the team will have to document and cite the source.
 
-Because of the limitations of models we have studied in the course, we recommend that data for analysis be aggregated to either the state- or county-level. Also, note that in the course we have not dealt with *time* in any way. Descriptive statistics 
+Because of the limitations of models we have studied in the course, we recommend that data for analysis be aggregated to either the state- or county-level. In w203 we have not dealt with *time* in any way. While your descriptive analysis might show plots of outcomes that vary over time, models that have repeated observations through time should likely be avoided. (If the team can marshal time-series tools, they are not prohibited from doing so, but these tools are beyond the scope of the course.) 
 
 As a starting place, your team might consider these data sources.
 
@@ -57,7 +61,9 @@ As a starting place, your team might consider these data sources.
 
 After a week of work, the project team will produce a one page research-proposal that defines the teams' research question, data sources and plan of action. 
 
-The research question should be informed by an understanding of the datasets that are available, and the data that is available in those data sets. This means that the the team will need to have done at least preliminary work understand what data is available. A motivated team might form their research question, and begin to build a functioning data pipeline as an investment in ongoing project success. This proposal is intended to provide a structure for the team to have early conversations; it will be graded credit/no credit for completeness (i.e. a reasonable effort by the team will receive full marks). 
+The research question should be informed by an understanding of the datasets that are available, and the information that is available in those data sets. This means that the the team will need to have done at least preliminary work understand what data is available. A motivated team might form their research question, and begin to build a functioning data pipeline as an investment in ongoing project success. 
+
+The research proposal is intended to provide a structure for the team to have early conversations; it will be graded credit/no credit for completeness (i.e. a reasonable effort by the team will receive full marks). Your instructor will read these proposals, and if any course corrections are necessary, will contact the team. 
 
 **This proposal is due in week 12, and needs only one submission per team.**
 

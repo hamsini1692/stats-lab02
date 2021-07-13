@@ -31,13 +31,18 @@ There are several steps to working with data for this report: downloading and pr
 
 ## Data Understanding (3 levels) 
 
-In order for a reader to understand or ascribe meaning to your results, they need to understand enough about the data that they can place what you are presenting to them in context.  This can be done with by referencing tables, figures, and summary statistics in the narrative. You might ask yourselves, "Overall, does the report demonstrate a thorough understanding of the data? Does the report convey this understand to its reader -- can the reader, through reading this report, come to the same understanding that the team has come to?" 
+In order for a reader to understand or ascribe meaning to your results, they need to understand enough about the data that they can place your results in context. Remember: at the time that you present an analysis, you and the team know more about your data than anybody else. You will have to communicate what the data is, how it was generated, and also communicate how specific variables that you are using in your analysis are distributed. This can be done with by referencing tables, figures, and summary statistics in the narrative. You might ask yourselves, "Overall, does the report demonstrate a thorough understanding of the data? Does the report convey this understand to its reader -- can the reader, through reading this report, come to the same understanding that the team has come to?" 
 
-
-3. A report that is scored in the top level on "Data Understanding" will describe features of the data in the narrative to give the reader sufficient understanding of the distribution.  Anomalies will be identified, including censored scales, artifacts of binning, and prominent clusters.  Every single plot or R output included in the report will be discussed in the narrative.
-2. A report that is scored in the second level on "Data Understanding" will leave the reader with a good understanding of the data distribution.  Keeping the report from a perfect score might be a failure to comment on some feature of the data that would help the reader to contextualize the results.
+3. A report that is scored in the top level will describe the provenance of the data; the audience will know the source of the data, the method used to collect the data, the units of observation of the data, and the distributions of important features of the data that will be used in the analysis. The report will identify anomalies, censored scales, artifacts of binning, and prominent clusters.  
+2. A report that is scored in the second level will leave the reader with a good understanding of the data distribution.  Keeping the report from a perfect score might be a failure to comment on some feature of the data that would help the reader to contextualize the results.
 1. A report that is scored in the first level will leave the reader with an insufficient understanding of the distribution to fully contextualize the results.  A report that includes an output dump (a plot or R output that is not discussed in the text) will also score in this level.
 
+## Presenting Evidence (2 levels)
+
+In a data science report, every argument that you make should be supported by evidence from your data. This argument should be compelling -- you should choose the most effective data to make your point -- and it should be parismonious -- you should not provide data as evidence that does not clearly move your argument forward. 
+
+2. Every single plot or output included in the report was discussed as a narrative point in the prose of the report. Every claim based on data that was made in the report was supported by evidence in the form of a table, figure, or supporting statistic. 
+1. There are claims made in the report that could have been supported with data, but were not. Or, there are plots, tables, or statistics presented in the report that are superfluous or do not push the argument forward. 
 
 ## Visual Design (5 levels)
 

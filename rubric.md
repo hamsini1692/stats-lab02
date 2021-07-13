@@ -2,14 +2,15 @@
 
 As of July 12, 2021 we're still finishing the fine details of this rubric. The exact wording and levels might change a some before we finalize (within the next few days). We're not going to make substantial changes, so you should feel empowered as a team to start working on your project. 
 
-## Introduction (4 levels) 
+## Introduction (5 levels) 
 
 Is the introduction clear? Is the research question specific and well defined? Does the introduction motivate a specific concept to be measured and explain how it will be operationalized. Does it do a good job of preparing the reader to understand the model specifications?
 
-4. An introduction that is scored in the top level has very successfully made the case for the reader. It will have placed the specific question in context, connected the problem with the statistics and data that will be used, and have generally created a compelling case for continuing to read the report. 
-3. An introduction that scores in the third level has done a significant amount of successful work. The reader can place the topic area and the research question; understand and appreciate why this is a question that demands a data based answer. Keeping this introduction from a full, four-point score might be: small issues with writing, some lack of continuity in the argument, or some other such small issue that keeps this from being a wholly convincing introduction. 
+5. An introduction that is scored in the top level has very successfully made the case for the reader. It will have placed the specific question in context, connected the problem with the statistics and data that will be used, and have generally created a compelling case for continuing to read the report. 
+4. An introduction that scores in the fourth level has done a significant amount of successful work. The reader can place the topic area and the research question; understand and appreciate why this is a question that demands a data based answer. Keeping this introduction from a full, four-point score might be: small issues with writing, some lack of continuity in the argument, or some other such small issue that keeps this from being a wholly convincing introduction.
+3. An introduction that scores in the third level has done some successful work. The reader can place the topic area and question. Often times, introductions in this level identify the broad issue at hand, but it might be too sweeping and fail to connect the broad issue to the specific research question. Or, specific aspects of the research question might not be fully developed.
 2. An introduction that scores in the second level has made some attempt to describe the problem and its importance, but it is missing significant parts of this argument. The language might be poorly chosen, the argument loosely formed, or the context left unexplained; there is considerable room for improvement. 
-1. An introduction that is scoring at the first level either doesn’t exist, or has given a very cursory treatment for the setting of the question and why an answer based on statistics is necessary. 
+1. An introduction that is scoring at the first level either doesn’t exist, or has given a very cursory treatment for the setting of the question and why an answer based on statistics is necessary.
 
 ## Conceptualization and Operationalization (4 levels) 
 

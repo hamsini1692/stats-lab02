@@ -1,5 +1,7 @@
 # Rubric
 
+As of July 12, 2021 we're still finishing the fine details of this rubric. The exact wording and levels might change a some before we finalize (within the next few days). We're not going to make substantial changes, so you should feel empowered as a team to start working on your project. 
+
 ## Introduction (4 levels) 
 
 Is the introduction clear? Is the research question specific and well defined? Does the introduction motivate a specific concept to be measured and explain how it will be operationalized. Does it do a good job of preparing the reader to understand the model specifications?
@@ -79,14 +81,6 @@ Did the report miss any important sources of omitted variable bias? Are the esti
 3. A report that scores in the top-level has thought carefully about omitted variables in a causal model; their thinking is done in a way that would satisfy a skeptical reader. It need not propose to measure all omitted featured, but after the discussion of omitted variables even a skeptical reader should acknowledge that the proposed cause-and-effect relationship is plausible. 
 2. A report that scores in the second-level has engaged with the concept of omitted variables, but has not fully addressed the topic. A skeptical reader might propose reasonable features that the team has not considered that would confound the proposed causal relationship. 
 1. A report that scores in the first-level has engaged with the concept of omitted varaibles in little more than a cursory manor, or has not engaged with the concept at all. A skeptical reader might pose a fundamental problem for the cause-and-effect relationship that the report has failed to address. 
-
-## Stating a Hypothesis (4 levels) 
-
-4. A report that is scored in the top level on framing a hypothesis will have precisely stated the correct null hypothesis for the conducted test in the regression model.
-3. A report that is scored in the third level will have expressed a null consistent with the conducted test. Keeping this hypothesis from scoring full points might be a small lack of the precision; misapplied technical language, or some other flaw that doesn't detract from the broader conceptualization of the test.
-2. A report that is scored in the second level will have stated a hypothesis, but it might be loosely related to the question at hand; unclear, or insufficiently precise to serve as a testing basis, or some other serious issue. 
-1. A report that is scored in the first level will have significant problems with how the null hypothesis is stated. Either it will be incorrectly stated as an alternative hypothesis; or, it will be unrelated to the question at hand; or some other major flaw. 
-
 
 ## Conclusion and Impacts (3 points) 
 

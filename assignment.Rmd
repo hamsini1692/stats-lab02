@@ -17,7 +17,7 @@ Imagine that you are part of a team of product data scientists at Acme, Inc. You
 
 ## Research Question
 
-Your research question must be specific, it should clearly state an $X$ and a $Y$, defined at a conceptual level.  Your $X$ should be a design property or characteristic of a product that could be modified in the manufacturing process, and your $Y$ should be a metric of success.
+Your research question must be specific, it should clearly state an $X$ and a $Y$, defined at a conceptual level.  Your $X$ should be a design property or characteristic of a product that could be modified in the production process, and your $Y$ should be a metric of success.
 
 In selecting your research question, you will have to use the skills you developed in RDADA to work on a question that can be addressed using a modeling approach from this course. It is not appropriate to ask "What product features increase success?" or "How does product design affect sales?". These types of questions are not amenable to a modeling based approach and your study would likely become a fishing expedition. Instead, your team will have to use your background knowledge to identify a relationship you want to measure between a specific design feature and a specific metric of success.
 
@@ -52,7 +52,7 @@ You may draw different variables from different data sources.  You may use data 
 
 ## Example of a Research Question 
 
-Suppose that your team is interested in learning how the length of lanyard attached to a catapult affects customers’ satisfaction with the catapult. (A classic question from [Roadrunner cartoons](https://youtu.be/r9ENQ5j2zG4?t=15 ).
+Suppose that your team is interested in learning how the length of lanyard attached to a catapult affects customers’ satisfaction with the catapult. (A classic question from [Roadrunner cartoons](https://youtu.be/r9ENQ5j2zG4?t=15 ).)
 
 You work to develop a primary outcome: proportion of boulders that land on their target.
 

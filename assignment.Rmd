@@ -187,7 +187,7 @@ The variables are as follows:
 
 Your final report should document your analysis, communicating your findings in a way that is technically precise, clear, and persuasive.
 
-**The maximum length is 4 pages using standard pdf_document output in RStudio.**
+**The maximum length is 4 pages using standard pdf_document output in RStudio, and including all tables, appendices, and references. This limit is strict.**
 
 The exact format of your report is flexible (form follows function), but it should include the following elements.
 

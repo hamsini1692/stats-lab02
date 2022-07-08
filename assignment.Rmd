@@ -211,7 +211,7 @@ You should explain which variables are used to represent your X and your Y, and 
 
 ### 5. A Table or Visualization
 
-You will be grading on your visual design. In particular:
+You will be graded on your visual design. In particular:
 
 1. Plots should be easy to navigate, with useful titles and axis labels.
 2. Do not include raw R output. All output, including variable names, should be formatted to make it easy for an English speaker to read.

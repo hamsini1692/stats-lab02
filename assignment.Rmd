@@ -14,12 +14,14 @@ This lab is a group assignment taking place over 3 weeks. The centerpiece of the
 
 | Deliverable Name              |     Due Date         | Grade Weight |
 |-------------------------------|----------------------|--------------| 
-| Part 1 - Explanation Practice | Tues, July 19 2pm    | 5%           | 
+| HW 11 - Explanation Practice  | Tues, July 19 2pm    | Part of HW   | 
 | Part 1 - Research Proposal    | Tues, July 19 2pm    | 5%           | 
 | Part 1 - Within Team Review   | Tues, July 19 2pm    | 5%           | 
-| Part 2 - CLM Practice         | Tues, July 26 2pm    | 5%           |
-| Part 3 - Final Report         | Tues, Aug 2   2pm    | 75%          | 
+| HW 12 -  CLM Practice         | Tues, July 26 2pm    | Part of HW   |
+| Part 3 - Final Report         | Tues, Aug 2   2pm    | 85%          | 
 | Part 3 - Final Presentation   | Unit 14 Live Session | 5%           | 
+
+Note that we are including Homework 11 and 12 in this lab packet. You may work with your teammates on these homeworks, but they continue to count towards the homework portion of your final grade.
 
 
 **This is a group assignment.** Your live session instructor will coordinate the formation of groups. We encourage you to use the lab as an opportunity to learn how to work as a team of collaborating data scientists on shared code; how to clean and organize data; and how to present work in a compelling way. We hope you will create an environment in which individuals can take risks, and improve the skills they are most interested in -- they might be project coordination, management of code, plotting, or others. *We hope that you can support and learn from one another.* 

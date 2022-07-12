@@ -20,7 +20,7 @@ theme_set(theme_bw())
 
 
 ```{r load data, message = FALSE, include=FALSE}
-ames <- read.csv("ames_explore.csv")
+ames <- read.csv("ames_confirm.csv")
 names(ames) <- tolower(names(ames))
 ```
 

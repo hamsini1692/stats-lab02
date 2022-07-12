@@ -1,14 +1,15 @@
 # lab_2
 
-
-The final project for MIDS w203. In this lab, students will apply what they have learned about building linear models 
-to produce a report that analyzes a specific research question. 
+The final project for MIDS w203. In this lab, students will apply what they have learned about building linear models to produce a report that analyzes a specific research question. 
 
 # Assignment Prompt
 
-The assignment prompt is in `./assignment.Rmd` and the linked `./assignment.html` file. 
+The assignment prompt is in `./assignment.Rmd` and rendered in `./assignment.pdf`. 
 
 # Project Organization
+
+We have created a folder structure to help you organize your work. This is based on [cookiecutter data science](https://drivendata.github.io/cookiecutter-data-science).
+
 
     ├── LICENSE
     ├── README.md          <- The top-level README describing the project aims
@@ -23,4 +24,3 @@ The assignment prompt is in `./assignment.Rmd` and the linked `./assignment.html
         └── data           <- Scripts to download or generate data
 
 
-Repository structured based on [cookiecutter data science](https://drivendata.github.io/cookiecutter-data-science).

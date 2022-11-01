@@ -107,6 +107,20 @@ The audience of your presentation is your class -- who you can imagine are inter
 
 Time in presentations, especially presentations that have results within them, *always* moves more quickly than you anticipate. Please, prepare to give your presentation within the allotted time. 
 
+## Presentation Guidelines 
+
+- **Plan for a 10 minute presentation.** Please note that this is an *incredibly* limited amount of time to present. A good rule of thumb is to use a maximum of 5 slides.
+- If time is available, an additional 5 minutes will be devoted to questions.
+- Begin by setting up your research question. It is quite alright to have a slide that bluntly states: "**Research Question**: [The question...]
+- You should ground the audience in an understanding of the concepts that are important to your question, and the data that you will use to measure these concepts. Explain enough about your key variables that your audience can reason about your models and results. (2-3 minutes max) 
+- Do not present R code, discuss data wrangling, or normality - details like this are best left to the full analysis. It is tempting to want to share these process based stories with your peers, but save that time for after the presentation. 
+- It is a good practice to be very clear about the variables that you are including in your final model. It is also good practice to show the results of the regression either in a table or an instructive figure, which you talk about and allow your audience to read and reason about. If you show a regression table, you need to provide your audience with enough time to digest it (minimum 2 minutes). For any table (or plot) that you show, you should minimally interpret the variables (or axes) and the key point that you are making with that piece of evidence. 
+
+Finally, a few more general thoughts: 
+
+- Practice your talk with a timer!
+- If you divide your talk with your teammates, practice your section with a timer to make sure you do not talk into your teammates' time. We would hate to cut your group off before a teammate has a chance to talk.
+
 \newpage
 # Deliverable 4: Final Report
 ## Due week 14, one submission per team
@@ -183,20 +197,3 @@ Are there any outcome variables on the right hand side? If so, *reason about the
 
 Make sure that you end your report with a discussion that distills key insights from your work, addresses your research question, and leaves the reader with a sense of broader context or impact.
 
-# Final Presentation 
-
-During the Unit 14 live session, each team will give a slide presentation of their work to their classmates, who will be seated with you as collaborating data scientists. As collaborating data scientists, your classmates will need to be informed of the specific product and research question that you are addressing.  
-
-## Presentation Guidelines 
-
-- **Plan for a 10 minute presentation.** Please note that this is an *incredibly* limited amount of time to present. A good rule of thumb is to use a maximum of 5 slides.
-- If time is available, an additional 5 minutes will be devoted to questions.
-- Begin by setting up your research question. It is quite alright to have a slide that bluntly states: "**Research Question**: Do shorter lanyards increase the accuracy of catapult launches?" (2 minutes max)
-- You should ground the audience in an understanding of the data. Explain enough about your key variables that your audience can reason about your models and results. (2-3 minutes max) 
-- Do not present R code, discuss data wrangling, or normality - details like this are best left to the full analysis. It is tempting to want to share these process based stories with your peers, but save that time for after the presentation. 
-- It is a good practice to show your final regression table on a slide by itself.  If you show a regression table, you need to provide your audience with enough time to digest it (minimum 2 minutes). For any table (or plot) that you show, you should minimally interpret the variables (or axes) and the key point that you are making with that piece of evidence. 
-
-Finally, a few more general thoughts: 
-
-- Practice your talk with a timer!
-- If you divide your talk with your teammates, practice your section with a timer to make sure you do not talk into your teammates' time. We would hate to cut your group off before a teammate has a chance to talk.

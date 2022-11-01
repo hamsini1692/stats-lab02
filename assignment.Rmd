@@ -8,7 +8,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Imagine that you are part of a team of product data scientists at Acme, Inc. Your manager, Mx. Coy Ote, has given you the freedom to choose your own product to investigate, and evaluate a way to make it more successful.
+Imagine that you are part of a team of product data scientists at Acme, Inc. Your manager, Dr. Coy Ote, has given you the freedom to choose your own product to investigate, and evaluate a way to make it more successful.
 
 **Your task is to select and develop a research question, find appropriate data, then write a proposal for the research study you will perform.** 
 
@@ -31,6 +31,7 @@ For this lab, you and your team will be responsible for gathering the data that 
 - [ICPSR](https://www.icpsr.umich.edu/web/pages/) for social and political data 
 - [Data.world](https://data.world/datasets/products)
 - [Dataverse](https://dataverse.harvard.edu) for published research data
+- [Data is Plural](https://www.data-is-plural.com)
 - [UC Irvine Machine Learning Data Repository](https://archive.ics.uci.edu/ml/index.php)
 - [Google Dataset Search](https://datasetsearch.research.google.com)
 - [Amazon Open Data Registry](https://registry.opendata.aws)
@@ -172,7 +173,6 @@ The first model you create should include *only the key variables* you want to m
 
 The structure of the other models is more flexible. Most often, you will see researchers add a block of covariates from one model to the next. Each model should be defensible, and should continue to tell the story of how product features contribute to product success. This might mean including additional covariates to remove omitted variable bias; or, instead, it might mean estimating a model that operationalizes your X or Y in a different way (be sure the operationalization is substantially different). You may also create a model tailored to investigating a heterogeneous effect.
 
-
 ## 7. A Discussion of Results
 
 In your text, comment on both *statistical significance and practical significance*. You may want to include statistical tests besides the standard t-tests for regression coefficients. Here, it is important that you make clear to your audience the practical significance of any model results. How should the product change as a result of what you have discovered? Are there limits to how much change you are proposing? What are the most important results that you have discovered, and what are the least important? 
@@ -196,4 +196,3 @@ Are there any outcome variables on the right hand side? If so, *reason about the
 ## 9. A Conclusion
 
 Make sure that you end your report with a discussion that distills key insights from your work, addresses your research question, and leaves the reader with a sense of broader context or impact.
-

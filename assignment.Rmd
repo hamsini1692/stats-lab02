@@ -65,8 +65,10 @@ After a week of work, the project team will submit a research proposal. The maxi
 
 Please answer these three questions in your proposal:
 
-1. What is the research question? Specifically, what is the X concept and what is the Y concept?
-2. What is the data source? What variables will you use to operationalize X and Y?
+1. What is the research question? Specifically, what is the $X$ concept and what is the $Y$ concept?
+  1. Who is the actor who can change your $X$ concept? 
+  2. Who is the audience who would care about changes in the $Y$ concept? 
+2. What is the data source? What variables will you use to operationalize $X$ and $Y$?
 3. What is the unit of observation? That is, does each row of the data represent a person, a review, a hotel stay, or something else?
 
 The research proposal is intended to provide a structure for the team to have an early conversation with their instructor. It will be graded credit/no credit for completeness (i.e. a reasonable effort by the team will receive full marks), and the feedback that you will receive will be brief. Your project will be given either a *green*, *yellow* or *red* light. 

@@ -37,7 +37,6 @@ For this lab, you and your team will be responsible for gathering the data that 
 - [Amazon Open Data Registry](https://registry.opendata.aws)
 - [Azure Open Data Registry](https://docs.microsoft.com/en-us/azure/open-datasets/dataset-catalog)
 
-
 **Requirements for your data:**
 
 - Data should be cross-sectional (i.e. not have multiple measurements for a single unit of observation). You may, for example, take a single cross section from a larger panel, or combine measurements from different time periods into a single number.
@@ -46,7 +45,6 @@ For this lab, you and your team will be responsible for gathering the data that 
 - For any omitted variable that would call your results into question, the data should include the best possible variable that operationalizes this concept. At a minimum, the data should have a variable that serves as an imperfect measure - or *proxy* - for the omitted variable.
 
 You may draw different variables from different data sources.  You may use data sources not on the above list. You must document any data source you use in your report.
-
 
 ## Example of a Research Question 
 

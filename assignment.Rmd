@@ -8,7 +8,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Imagine that you are part of a team of product data scientists at Acme, Inc. Your manager, Mx. Coy Ote, has given you the freedom to choose your own product to investigate, and evaluate a way to make it more successful.
+Imagine that you are part of a team of product data scientists at Acme, Inc. Your manager, Dr. Coy Ote, has given you the freedom to choose your own product to investigate, and evaluate a way to make it more successful.
 
 **Your task is to select and develop a research question, find appropriate data, then write a proposal for the research study you will perform.** 
 
@@ -31,11 +31,11 @@ For this lab, you and your team will be responsible for gathering the data that 
 - [ICPSR](https://www.icpsr.umich.edu/web/pages/) for social and political data 
 - [Data.world](https://data.world/datasets/products)
 - [Dataverse](https://dataverse.harvard.edu) for published research data
+- [Data is Plural](https://www.data-is-plural.com)
 - [UC Irvine Machine Learning Data Repository](https://archive.ics.uci.edu/ml/index.php)
 - [Google Dataset Search](https://datasetsearch.research.google.com)
 - [Amazon Open Data Registry](https://registry.opendata.aws)
 - [Azure Open Data Registry](https://docs.microsoft.com/en-us/azure/open-datasets/dataset-catalog)
-
 
 **Requirements for your data:**
 
@@ -45,7 +45,6 @@ For this lab, you and your team will be responsible for gathering the data that 
 - For any omitted variable that would call your results into question, the data should include the best possible variable that operationalizes this concept. At a minimum, the data should have a variable that serves as an imperfect measure - or *proxy* - for the omitted variable.
 
 You may draw different variables from different data sources.  You may use data sources not on the above list. You must document any data source you use in your report.
-
 
 ## Example of a Research Question 
 
@@ -65,8 +64,10 @@ After a week of work, the project team will submit a research proposal. The maxi
 
 Please answer these three questions in your proposal:
 
-1. What is the research question? Specifically, what is the X concept and what is the Y concept?
-2. What is the data source? What variables will you use to operationalize X and Y?
+1. What is the research question? Specifically, what is the $X$ concept and what is the $Y$ concept?
+  1. Who is the actor who can change your $X$ concept? 
+  2. Who is the audience who would care about changes in the $Y$ concept? 
+2. What is the data source? What variables will you use to operationalize $X$ and $Y$?
 3. What is the unit of observation? That is, does each row of the data represent a person, a review, a hotel stay, or something else?
 
 The research proposal is intended to provide a structure for the team to have an early conversation with their instructor. It will be graded credit/no credit for completeness (i.e. a reasonable effort by the team will receive full marks), and the feedback that you will receive will be brief. Your project will be given either a *green*, *yellow* or *red* light. 
@@ -79,31 +80,45 @@ Projects that have been given a red-light should be seriously considered, and li
 
 \newpage
 # Deliverable 2: Within-Team Review
-## Due week 12, one submission per person
+## Due week 14, one submission per person
 
 Being an effective, supportive team member is a crucial part of data science work. Your performance in this lab includes the role you play in supporting your teammates. This includes being responsive, creating an environment in which all members feel included, and above all treating each other with respect. In line with this perspective, we will ask each team member to write two paragraphs to their instructor about the progress they have made individually, and the team has made as a whole toward completing their report. 
 
 This self-assessment should: 
 
-- Reflect on the strengths and weaknesses of the team and the team's process to this point in the project. 
-   - Where your collaboration has worked well, how will you work to ensure that these successful practices continue to be employed? 
-   - If there are places where collaboration has been challenging, what can the team do jointly to improve? 
+- Reflect on the strengths and weakness, and the team's process in the project.
+   - Where has your collaboration has worked well? How will you work to ensure that these successful practices continue to be employed? 
+   - If there are places where collaboration has been challenging, what could the team have done jointly to improve? 
 - If there are any individual performances that deserve special recognition, please let your instructor know in this evaluation.
 - If there are any individual performances that require special attention, please also let your instructor know in this evaluation. 
 
-Instructors will treat these reviews as confidential and will not take any action without first consulting you.
+Instructors will treat these reviews as anonymous. As well, because this is a submission as a part of your educational record, you have a federally protected guarantee that we will not share what you write with anyone outside of instructors with a legitimate educational purpose. 
 
-**This reflection is due at the start of week 12, in Gradescope and requires one submission per person.**
+**This reflection is due at the conclusion of your lab-work, in Gradescope, and requires one submission per person.**
 
 \newpage 
 # Deliverable 3: Final Presentation 
-## Presented week 14, on presentation per team
+## Presented week 14, one presentation per team
 
 The final presentation should show the team's work. While it is not a requirement that each person actually present (although you may, if you like) your instructor expects that each team-member will contribute to writing the presentation. 
 
 The audience of your presentation is your class -- who you can imagine are interested, statistically informed attendees who have the goal of making your work better by providing direct feedback. You do not need to, for example describe how a t-test works, but if you choose to use such a test, you must use it appropriately.
 
 Time in presentations, especially presentations that have results within them, *always* moves more quickly than you anticipate. Please, prepare to give your presentation within the allotted time. 
+
+## Presentation Guidelines 
+
+- **Plan for a 10 minute presentation.** Please note that this is an *incredibly* limited amount of time to present. A good rule of thumb is to use a maximum of 5 slides.
+- If time is available, an additional 5 minutes will be devoted to questions.
+- Begin by setting up your research question. It is quite alright to have a slide that bluntly states: "**Research Question**: [The question...]
+- You should ground the audience in an understanding of the concepts that are important to your question, and the data that you will use to measure these concepts. Explain enough about your key variables that your audience can reason about your models and results. (2-3 minutes max) 
+- Do not present R code, discuss data wrangling, or normality - details like this are best left to the full analysis. It is tempting to want to share these process based stories with your peers, but save that time for after the presentation. 
+- It is a good practice to be very clear about the variables that you are including in your final model. It is also good practice to show the results of the regression either in a table or an instructive figure, which you talk about and allow your audience to read and reason about. If you show a regression table, you need to provide your audience with enough time to digest it (minimum 2 minutes). For any table (or plot) that you show, you should minimally interpret the variables (or axes) and the key point that you are making with that piece of evidence. 
+
+Finally, a few more general thoughts: 
+
+- Practice your talk with a timer!
+- If you divide your talk with your teammates, practice your section with a timer to make sure you do not talk into your teammates' time. We would hate to cut your group off before a teammate has a chance to talk.
 
 \newpage
 # Deliverable 4: Final Report
@@ -156,7 +171,6 @@ The first model you create should include *only the key variables* you want to m
 
 The structure of the other models is more flexible. Most often, you will see researchers add a block of covariates from one model to the next. Each model should be defensible, and should continue to tell the story of how product features contribute to product success. This might mean including additional covariates to remove omitted variable bias; or, instead, it might mean estimating a model that operationalizes your X or Y in a different way (be sure the operationalization is substantially different). You may also create a model tailored to investigating a heterogeneous effect.
 
-
 ## 7. A Discussion of Results
 
 In your text, comment on both *statistical significance and practical significance*. You may want to include statistical tests besides the standard t-tests for regression coefficients. Here, it is important that you make clear to your audience the practical significance of any model results. How should the product change as a result of what you have discovered? Are there limits to how much change you are proposing? What are the most important results that you have discovered, and what are the least important? 
@@ -180,21 +194,3 @@ Are there any outcome variables on the right hand side? If so, *reason about the
 ## 9. A Conclusion
 
 Make sure that you end your report with a discussion that distills key insights from your work, addresses your research question, and leaves the reader with a sense of broader context or impact.
-
-# Final Presentation 
-
-During the Unit 14 live session, each team will give a slide presentation of their work to their classmates, who will be seated with you as collaborating data scientists. As collaborating data scientists, your classmates will need to be informed of the specific product and research question that you are addressing.  
-
-## Presentation Guidelines 
-
-- **Plan for a 10 minute presentation.** Please note that this is an *incredibly* limited amount of time to present. A good rule of thumb is to use a maximum of 5 slides.
-- If time is available, an additional 5 minutes will be devoted to questions.
-- Begin by setting up your research question. It is quite alright to have a slide that bluntly states: "**Research Question**: Do shorter lanyards increase the accuracy of catapult launches?" (2 minutes max)
-- You should ground the audience in an understanding of the data. Explain enough about your key variables that your audience can reason about your models and results. (2-3 minutes max) 
-- Do not present R code, discuss data wrangling, or normality - details like this are best left to the full analysis. It is tempting to want to share these process based stories with your peers, but save that time for after the presentation. 
-- It is a good practice to show your final regression table on a slide by itself.  If you show a regression table, you need to provide your audience with enough time to digest it (minimum 2 minutes). For any table (or plot) that you show, you should minimally interpret the variables (or axes) and the key point that you are making with that piece of evidence. 
-
-Finally, a few more general thoughts: 
-
-- Practice your talk with a timer!
-- If you divide your talk with your teammates, practice your section with a timer to make sure you do not talk into your teammates' time. We would hate to cut your group off before a teammate has a chance to talk.

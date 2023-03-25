@@ -1,6 +1,6 @@
 ---
 title: "Lab 2: What Makes a Product Successful?"
-author: 'w203: Statistics for Data Science'
+author: 'w203: Statistics for Data Sciences'
 output: pdf_document
 ---
 

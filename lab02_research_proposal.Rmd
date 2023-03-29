@@ -1,0 +1,89 @@
+---
+title: "Estimating the Revenue of a movie based on the budget of the movie"
+subtitle: "Datasci 203, Section 10, Group 2, Lab 2"
+author: 'Divya Menghani, Hamsini Sankaran, Israel Ayode, Sivakumar Thiyagarajan'
+output:
+  pdf_document
+header-includes:
+ \usepackage{wrapfig}
+ \usepackage{float}
+ \floatplacement{figure}{H}
+---
+```{r load packages and set options, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(tidyverse) 
+library(magrittr)
+library(knitr)
+library(patchwork)
+library(moments)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+library(readr)
+source("data_cleaning.R")
+library(ggplot2)
+theme_set(theme_bw())
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(echo=FALSE, message=FALSE)
+library(caret)
+```
+
+## Introduction 
+
+We are drafting a research proposal to study the relationship between the “Budget” and the “Revenue” of the movie. Below is the research question and the X and the Y concept.
+
+1. What is the research question? Specifically, what is the X concept and what is the Y concept?
+
+  \begin{quote}
+    \begin{itemize}
+    \item \textit{Research Question: How does the budget of a movie influence its revenue?}
+    \item \textit{X Concept: Budget - budget (metric)}
+     \item \textit{Y Concept: Revenue - revenue (metric)}
+      \end{itemize}
+  \end{quote}
+
+While experts may provide broad guidelines, data-based approaches are needed to reduce uncertainty in the value of remodels. In the aggregate, remodeling accounts for $400 billion spent each year in the US. Uncertainty in how much of this money can be recouped may contribute to the misallocation or underprovision of resources in this sector of the economy.
+
+This study estimates the economic value for remodeling a home empirically, utilizing observations of house sales in Ames, Iowa. The data shows the timing of the last remodel before a house is sold, but does not distinguish between different types of remodels. Applying a set of regression models, I estimate the value that results immediately when a house is remodeled, and also the rate at which it decays over time.
+
+
+```{r load data, warning=FALSE, echo=FALSE,results='hide'}
+movie_data <- read_csv("./datasets/movies_data.csv")
+nrow_original <- nrow(movie_data)
+```
+
+```{r call the dataframe,warning=FALSE, echo=FALSE,results='hide'}
+movie_filtered_df <- data_cleaning()
+nrow_cleaned <- nrow(movie_filtered_df)
+nrow_cleaned
+```
+
+```{r data exploration,fig.align='center', fig.height=3, fig.width=6,warning=FALSE, echo=FALSE,}
+# randomly sample 30% of rows from movie_filtered_df
+set.seed(123) # set seed for reproducibility
+
+#Split data into 30% and 70% using caret's createDataPartition function
+index <- createDataPartition(movie_filtered_df$revenue, p = 0.3, list = FALSE)
+
+# Create the 30% sample for performing data exploration
+movie_sample_exploration <- movie_filtered_df[index,]
+
+# Create the 70% sample for performing statistical test
+movie_sample_statistical <- movie_filtered_df[-index,]
+
+#Create a scatterplot between Budget and Revenue
+ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=vote_count)) +
+  geom_point() +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue Scatter Plot") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+```

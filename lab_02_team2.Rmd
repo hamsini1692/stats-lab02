@@ -33,6 +33,7 @@ library(ggplot2)
 theme_set(theme_bw())
 options(tinytex.verbose = TRUE)
 knitr::opts_chunk$set(echo=FALSE, message=FALSE)
+library(caret)
 ```
 
 
@@ -48,6 +49,32 @@ nrow_cleaned <- nrow(movie_filtered_df)
 nrow_cleaned
 View(movie_filtered_df)
 ```
+
+```{r data exploration,fig.align='center', fig.height=3, fig.width=6}
+# randomly sample 30% of rows from movie_filtered_df
+set.seed(123) # set seed for reproducibility
+
+#Split data into 30% and 70% using caret's createDataPartition function
+index <- createDataPartition(movie_filtered_df$revenue, p = 0.3, list = FALSE)
+
+# Create the 30% sample for data exploration
+movie_sample_exploration <- movie_filtered_df[index,]
+
+# Create the 70% sample for statistical test
+movie_sample_statistical <- movie_filtered_df[-index,]
+
+movie_sample_exploration <- movie_filtered_df %>% 
+  sample_frac(0.3, replace = FALSE)
+
+ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=vote_count)) +
+  geom_point() +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue Scatter Plot") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+```
+
 
 ```{r scatter plot, fig.align='center', fig.height=3, fig.width=5}
 ggplot(movie_filtered_df, aes(x=budget, y=revenue,  color=vote_count)) +

@@ -49,7 +49,7 @@ nrow_cleaned
 View(movie_filtered_df)
 ```
 
-```{r scatter plot, fig.align='center', fi}
+```{r scatter plot, fig.align='center', fig.height=3, fig.width=5}
 ggplot(movie_filtered_df, aes(x=budget, y=revenue,  color=vote_count)) +
   geom_point() +
   xlab("Budget") +

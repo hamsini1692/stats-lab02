@@ -1,6 +1,5 @@
 ---
-title: "W203 Lab 02 Research proposal"
-subtitle: "Datasci 203, Section 10, Group 2, Lab 2"
+title: "W203 Lab 02 Research Proposal - Team 02"
 author: 'Divya Menghani, Hamsini Sankaran, Israel Ayode, Sivakumar Thiyagarajan'
 output:
   pdf_document
@@ -35,9 +34,7 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE)
 library(caret)
 ```
 
-The movie industry is a huge multi-billion dollar business, with movies being created at various budgets ranging from low to high. One of the major factors that determine the success of a movie is its revenue. In this proposal, we aim to investigate the relationship between the “Budget” and the “Revenue” of the movie. 
-
-1. What is the research question? Specifically, what is the X concept and what is the Y concept?
+The movie industry is a huge multi-billion dollar business, with movies being created at various budgets ranging from low to high. One of the major factors that determine the success of a movie is its revenue. In this proposal, we aim to investigate the relationship between the “Budget” and the “Revenue” of the movie. Below are the research question, the X and the Y concept
 
   \begin{quote}
     \begin{itemize}
@@ -47,30 +44,9 @@ The movie industry is a huge multi-billion dollar business, with movies being cr
       \end{itemize}
   \end{quote}
   
-Other variables that influences the X concept “Budget” are:  
-- Movie length (runtime)
-- No. of Cast and Crew (derived from ‘credits’ column)
-- Genre (genres)
+The variables that influences the X concept “Budget” are the Movie length (runtime), No. of Cast and Crew (derived from ‘credits’ column) and Genre (genres). Likewise, the  variables that influences the Y concept “Revenue” are the Movie length (runtime), Vote count (vote_count), Movie title length (no. of characters in movie title), No. of Cast and Crew (derived from ‘credits’ column), Genre (genres) and the Release Date. The Movie investors are the key actors who can influence the both the  X and the Y concept.
 
-Other variables that influences the Y concept “Revenue” are:  
-- Movie length (runtime)
-- Vote count (vote_count)
-- Movie title length (no. of characters in movie title)
-- No. of Cast and Crew (derived from ‘credits’ column) 
-- Genre (genres)
-- Release Date
-
-2.  Who is the actor who can change your X concept?
-
-Movie investors are the key actors who can influence the X concept, which is the budget of the movie. 
-
-3.Who is the audience who would care about changes in the Y concept?
-
-Movie investors are the key actoirs who can influence the Y concept, which is the revenue of the movie. 
-
-4.What is the data source? What variables will you use to operationalize X and Y? 
-
-The dataset is obtained for "kaggle" website. The dataset comprises of metadata for more than 700,000 movies listed in the TMDB Dataset. It is relevant and provides an opportunity to explore and analyze the relationship between the budget and the revenue of the movies. Since the dataset is unique on movies, each movie is independent from one another and uniquely identified by an id column in the dataset.The movie details,keywords and credits are collected from the TMDB open API. We operatuonalize the variables X and Y as indicated below:
+The dataset is collected from kaggle. The fields like the movie details,keywords and credits are collected from the TMDB open API.The dataset comprises of metadata for more than 700,000 movies listed in the TMDB Dataset. It is relevant and provides an opportunity to explore and analyze the relationship between the budget and the revenue of the movies. Since the dataset is unique on movies, each movie is independent from one another and uniquely identified by an id column in the dataset.We operatuonalize the variables X and Y as indicated below:
 
 - Operationalization of X: Budget (budget)
   We operationalize the budget in terms of $ amount.
@@ -78,8 +54,6 @@ The dataset is obtained for "kaggle" website. The dataset comprises of metadata 
   We operationalize the budget in terms of $ amount.
   
 We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA).
-
-5. What is the unit of observation?  That is, does each row of the data represent a person, a review, a hotel stay, or something else? <br/>
 
 Each row of data in the dataset is uniquely identified by a movie. <br/>
 

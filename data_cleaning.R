@@ -7,7 +7,6 @@ data_cleaning <- function() {
            release_date, budget, revenue, runtime, status,
            vote_average, vote_count, credits)
   movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000))) %>%
-  #movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")))
   na.omit(movie_data$revenue)
   na.omit(movie_data$budget)
   #Return the preprocessed data frame

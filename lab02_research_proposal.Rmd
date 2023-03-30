@@ -33,9 +33,7 @@ options(tinytex.verbose = TRUE)
 knitr::opts_chunk$set(echo=FALSE, message=FALSE)
 library(caret)
 ```
-
-The movie industry is a huge multi-billion dollar business, with movies being created at various budgets ranging from low to high. One of the major factors that determine the success of a movie is its revenue. In this proposal, we aim to investigate the relationship between the “Budget” and the “Revenue” of the movie. Below are the research question, the X and the Y concept
-
+  The movie industry is a huge multi-billion dollar business, with movies created at various budgets ranging from low to high. However, one of the significant factors determining a movie's success is its revenue. In this proposal, we aim to investigate the relationship between the "Budget" and the "Revenue" of the film. Below are the research question, the X and the Y concept
   \begin{quote}
     \begin{itemize}
     \item \textit{Research Question: How does the budget of a movie influence its revenue?}
@@ -44,21 +42,15 @@ The movie industry is a huge multi-billion dollar business, with movies being cr
       \end{itemize}
   \end{quote}
   
-The variables that influences the X concept “Budget” are the Movie length (runtime), No. of Cast and Crew (derived from ‘credits’ column) and Genre (genres). Likewise, the  variables that influences the Y concept “Revenue” are the Movie length (runtime), Vote count (vote_count), Movie title length (no. of characters in movie title), No. of Cast and Crew (derived from ‘credits’ column), Genre (genres) and the Release Date. The Movie investors are the key actors who can influence the both the  X and the Y concept.
+The variables influencing the X concept "Budget" are the Movie length (runtime), No. Of Cast and Crew(derived from the 'credits' column) and Genre (genres). Likewise, the variables that influence the Y concept "Revenue" is the Movie length (runtime), Vote count (vote_count), Movie title length (no. of characters in movie title), No. Of Cast and Crew (derived from the 'credits' column), Genre (genres), and the Release Date.
+Movie investors are the key actors influencing the X and Y concepts.
 
-The dataset is collected from kaggle. The fields like the movie details,keywords and credits are collected from the TMDB open API.The dataset comprises of metadata for more than 700,000 movies listed in the TMDB Dataset. It is relevant and provides an opportunity to explore and analyze the relationship between the budget and the revenue of the movies. Since the dataset is unique on movies, each movie is independent from one another and uniquely identified by an id column in the dataset.We operatuonalize the variables X and Y as indicated below:
+  We gathered the dataset from Kaggle. The fields like movie details, keywords, and credits are collected from the TMDB open API. The dataset comprises metadata for more than 700,000 movies listed in the TMDB Dataset. It is relevant and provides an opportunity to explore and analyze the relationship between the budget and the revenue of the movies. Since the dataset is unique on film, each movie is independent of one another and uniquely identified by an id column in the dataset. We operationalize the variables Budget(X) and Revenue(Y) in terms of $ amount.We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA). 
 
-- Operationalization of X: Budget (budget)
-  We operationalize the budget in terms of $ amount.
-- Operationalization of Y: Revenue (revenue)
-  We operationalize the budget in terms of $ amount.
-  
-We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA).
+  We operationalize the variables Budget(X) and  Revenue(Y) in terms of $ amount.We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA). Each row of data in the dataset is uniquely identified by a movie as indicated below.
 
-Each row of data in the dataset is uniquely identified by a movie. <br/>
-
-- Budget is measured by $ amount
-- Revenue is measured by $ amount 
+- Budget is represented as $ amount
+- Revenue is represented as $ amount 
 - Genre represents movie category
 - Movie Length is represented as count
 - Vote count is represented as count 

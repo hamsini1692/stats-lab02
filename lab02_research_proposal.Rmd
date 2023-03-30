@@ -1,5 +1,5 @@
 ---
-title: "Estimating the Revenue of a movie based on the budget of the movie"
+title: "W203 Lab 02 Research proposal"
 subtitle: "Datasci 203, Section 10, Group 2, Lab 2"
 author: 'Divya Menghani, Hamsini Sankaran, Israel Ayode, Sivakumar Thiyagarajan'
 output:
@@ -35,9 +35,7 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE)
 library(caret)
 ```
 
-## Introduction 
-
-We are drafting a research proposal to study the relationship between the “Budget” and the “Revenue” of the movie. Below is the research question and the X and the Y concept.
+The movie industry is a huge multi-billion dollar business, with movies being created at various budgets ranging from low to high. One of the major factors that determine the success of a movie is its revenue. In this proposal, we aim to investigate the relationship between the “Budget” and the “Revenue” of the movie. 
 
 1. What is the research question? Specifically, what is the X concept and what is the Y concept?
 
@@ -48,11 +46,50 @@ We are drafting a research proposal to study the relationship between the “Bud
      \item \textit{Y Concept: Revenue - revenue (metric)}
       \end{itemize}
   \end{quote}
+  
+Other variables that influences the X concept “Budget” are:  
+- Movie length (runtime)
+- No. of Cast and Crew (derived from ‘credits’ column)
+- Genre (genres)
 
-While experts may provide broad guidelines, data-based approaches are needed to reduce uncertainty in the value of remodels. In the aggregate, remodeling accounts for $400 billion spent each year in the US. Uncertainty in how much of this money can be recouped may contribute to the misallocation or underprovision of resources in this sector of the economy.
+Other variables that influences the Y concept “Revenue” are:  
+- Movie length (runtime)
+- Vote count (vote_count)
+- Movie title length (no. of characters in movie title)
+- No. of Cast and Crew (derived from ‘credits’ column) 
+- Genre (genres)
+- Release Date
 
-This study estimates the economic value for remodeling a home empirically, utilizing observations of house sales in Ames, Iowa. The data shows the timing of the last remodel before a house is sold, but does not distinguish between different types of remodels. Applying a set of regression models, I estimate the value that results immediately when a house is remodeled, and also the rate at which it decays over time.
+2.  Who is the actor who can change your X concept?
 
+Movie investors are the key actors who can influence the X concept, which is the budget of the movie. 
+
+3.Who is the audience who would care about changes in the Y concept?
+
+Movie investors are the key actoirs who can influence the Y concept, which is the revenue of the movie. 
+
+4.What is the data source? What variables will you use to operationalize X and Y? 
+
+The dataset is obtained for "kaggle" website. The dataset comprises of metadata for more than 700,000 movies listed in the TMDB Dataset. It is relevant and provides an opportunity to explore and analyze the relationship between the budget and the revenue of the movies. Since the dataset is unique on movies, each movie is independent from one another and uniquely identified by an id column in the dataset.The movie details,keywords and credits are collected from the TMDB open API. We operatuonalize the variables X and Y as indicated below:
+
+- Operationalization of X: Budget (budget)
+  We operationalize the budget in terms of $ amount.
+- Operationalization of Y: Revenue (revenue)
+  We operationalize the budget in terms of $ amount.
+  
+We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA).
+
+5. What is the unit of observation?  That is, does each row of the data represent a person, a review, a hotel stay, or something else? <br/>
+
+Each row of data in the dataset is uniquely identified by a movie. <br/>
+
+- Budget is measured by $ amount
+- Revenue is measured by $ amount 
+- Genre represents movie category
+- Movie Length is represented as count
+- Vote count is represented as count 
+- Movie title length is represented as count 
+- No. of Cast and Crew  is represented as count
 
 ```{r load data, warning=FALSE, echo=FALSE,results='hide'}
 movie_data <- read_csv("./datasets/movies_data.csv")
@@ -65,7 +102,7 @@ nrow_cleaned <- nrow(movie_filtered_df)
 nrow_cleaned
 ```
 
-```{r data exploration,fig.align='center', fig.height=3, fig.width=6,warning=FALSE, echo=FALSE,}
+```{r data exploration,fig.align='center', fig.height=3,warning=FALSE, echo=FALSE,}
 # randomly sample 30% of rows from movie_filtered_df
 set.seed(123) # set seed for reproducibility
 
@@ -85,5 +122,6 @@ ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=vote_count)) +
   ylab("Revenue") +
   ggtitle("Budget vs Revenue Scatter Plot") +
   scale_x_continuous(labels = scales::comma) +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```

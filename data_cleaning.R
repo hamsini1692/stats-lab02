@@ -1,13 +1,16 @@
 
 data_cleaning <- function() {
-  # Load the movies data 
+  
+  #Load the movies data 
   movie_df <- as.data.frame(movie_data) %>% 
-    select(id, title, genres, popularity, production_companies,
+  select(id, title, genres, popularity, production_companies,
            release_date, budget, revenue, runtime, status,
            vote_average, vote_count, credits)
-  movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000)))
-  
-  # Return the preprocessed data frame
+  movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000))) %>%
+  #movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")))
+  na.omit(movie_data$revenue)
+  na.omit(movie_data$budget)
+  #Return the preprocessed data frame
   return(movie_cleaned_df)
 }
 

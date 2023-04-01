@@ -15,7 +15,7 @@ data_cleaning <- function() {
   movie_df$budget <- ifelse(is.na(movie_df$budget), 0, movie_df$budget)
   movie_df$revenue <- ifelse(is.na(movie_df$revenue), 0, movie_df$revenue)
   
-  movie_cleaned_df <- filter(movie_df, budget > 0, revenue > 0, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000)))
+  movie_cleaned_df <- filter(movie_df, budget > 999, revenue > 999, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000)))
   movie_cleaned_df$genres <- replace(movie_cleaned_df$genres, is.na(movie_cleaned_df$genres), "XXXXX")
 
   #create a genre map to assign numbers to the categories 

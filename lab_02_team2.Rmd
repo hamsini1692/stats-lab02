@@ -2,6 +2,7 @@
 title: "Estimating the Revenue of a movie based on the budget of the movie"
 subtitle: "Datasci 203, Section 10, Group 2, Lab 2"
 author: 'Divya Menghani, Hamsini Sankaran, Israel Ayode, Sivakumar Thiyagarajan'
+geometry: margin=0.5cm
 output:
   pdf_document
 header-includes:
@@ -9,6 +10,10 @@ header-includes:
  \usepackage{float}
  \floatplacement{figure}{H}
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ```{r load packages and set options, include=FALSE}
 library(tidyverse)
@@ -34,6 +39,7 @@ theme_set(theme_bw())
 options(tinytex.verbose = TRUE)
 knitr::opts_chunk$set(echo=FALSE, message=FALSE)
 library(caret)
+library(stringr)
 ```
 
 
@@ -50,7 +56,7 @@ nrow_cleaned
 View(movie_filtered_df)
 ```
 
-```{r data exploration,fig.align='center', fig.height=3, fig.width=6}
+```{r data exploration,fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
 # randomly sample 30% of rows from movie_filtered_df
 set.seed(123) # set seed for reproducibility
 
@@ -66,13 +72,77 @@ movie_sample_statistical <- movie_filtered_df[-index,]
 movie_sample_exploration <- movie_filtered_df %>% 
   sample_frac(0.3, replace = FALSE)
 
-ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=vote_count)) +
+ggplot(movie_sample_exploration, aes(x=budget/1000000, y=revenue/1000000, color=vote_count)) +
   geom_point() +
   xlab("Budget") +
   ylab("Revenue") +
   ggtitle("Budget vs Revenue Scatter Plot") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
+```
+
+```{r heat map, fig.align='center', fig.height=3, fig.width=5}
+library(corrplot)
+library(Hmisc)
+selected_columns <- movie_sample_exploration %>%
+  dplyr::select(budget, revenue, runtime, vote_count, vote_average, title_length, total_cast, popularity,total_production_companies)
+cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+```{r date}
+library(ggplot2)
+library(lubridate)
+
+movie_sample_exploration$month <- format(as.Date(movie_sample_exploration$release_date), "%m")
+monthly_revenue_all_years <- aggregate(revenue ~ month, data = movie_sample_exploration, FUN = sum, na.rm = TRUE)
+
+ggplot(monthly_revenue_all_years, aes(x = month, y = revenue)) +
+  geom_point() +
+  labs(x = "Month", y = "Total Revenue") +
+  theme_minimal()   
+```
+```{r holiday check}
+library(ggplot2)
+library(lubridate)
+library(bizdays)
+library(timeDate)
+
+# Filter the data to include only movies released after 2011
+movie_sample_filtered <- movie_sample_exploration %>% 
+  filter(year(release_date) >= 2012)
+
+# Calculate the average revenue per month for all years from 2012 to 2022
+monthly_revenue_all_years <- movie_sample_filtered %>%
+  group_by(month = month(release_date, label = TRUE)) %>%
+  summarise(mean_revenue = mean(revenue, na.rm = TRUE))
+
+# Plot the average revenue per month for all years from 2012 to 2022
+ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue, fill = month)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete(limits = month.abb) +
+  labs(x = "Month", y = "Average Revenue") +
+  theme_minimal()
+
+# Create a scatter plot of budget vs. revenue, colored by month
+ggplot(movie_sample_filtered, aes(x = budget, y = revenue, color = month(release_date, label = TRUE))) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "Budget", y = "Revenue", color = "Month") +
+  theme_minimal()
+
+
+# Filter the data to only include movies released in September to December
+movie_sample_filtered_sept_to_dec <- movie_sample_filtered %>%
+  filter(month(release_date) %in% 9:12)
+
+# Create a scatter plot of budget vs. revenue, colored by month
+ggplot(movie_sample_filtered_sept_to_dec, aes(x = budget, y = revenue, color = month(release_date, label = TRUE))) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "Budget", y = "Revenue", color = "Month") +
+  theme_minimal()
 ```
 
 

@@ -4,6 +4,7 @@ author: 'Ayoade Israel,Divya Menghani,Hamsini Sankaran,Sivakumar Thiyagarajan'
 urlcolor: blue
 header-includes:
   \usepackage{titling}
+  \usepackage{setspace}
 output:
   pdf_document: default
 --- 
@@ -76,10 +77,10 @@ movie_sample_exploration <- movie_filtered_df[index,]
 movie_sample_statistical <- movie_filtered_df[-index,]
 
 #Create a scatterplot between Budget and Revenue
-ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=vote_count)) +
+ggplot(movie_sample_exploration, aes(x=budget/1000000, y=revenue/1000000,  color=genre_category)) +
   geom_point() +
-  xlab("Budget") +
-  ylab("Revenue") +
+  xlab("Budget(In Millions)") +
+  ylab("Revenue(In Millions)") +
   ggtitle("Budget vs Revenue Scatter Plot") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma) +

@@ -19,11 +19,17 @@ data_cleaning <- function() {
   movie_cleaned_df$genres <- replace(movie_cleaned_df$genres, is.na(movie_cleaned_df$genres), "XXXXX")
 
   #create a genre map to assign numbers to the categories 
-  genre_map <- c(Action = 1, Adventure = 2, Animation = 3, Comedy = 4, Crime = 5,
-                 Documentary = 6, Drama = 7, Family = 8, Fantasy = 9, History = 10,
-                 Horror = 11, Music = 12, Mystery = 13, Romance = 14, 
-                 `Science Fiction` = 15, Thriller = 16, `TV Movie` = 17,
-                 War = 18, Western = 19, XXXXX = 0)
+  #genre_map <- c(Action = 1, Adventure = 2, Animation = 3, Comedy = 4, Crime = 5,
+  #               Documentary = 6, Drama = 7, Family = 8, Fantasy = 9, History = 10,
+  #              Horror = 11, Music = 12, Mystery = 13, Romance = 14, 
+  #               `Science Fiction` = 15, Thriller = 16, `TV Movie` = 17,
+  #               War = 18, Western = 19, XXXXX = 0)
+  
+  genre_map <- c(Action = "Action", Adventure = "Adventure", Animation = "Animation", Comedy = "Comedy", Crime = "Crime",
+                 Documentary = "Documentary", Drama = "Drama", Family = "Family", Fantasy = "Fantasy", History = "History",
+                 Horror = "Horror", Music = "Music", Mystery = "Mystery", Romance = "Romance", 
+                 `Science Fiction` = "Science Fiction", Thriller = "Thriller", `TV Movie` = "TV Movie",
+                 War = "War", Western = "Western", XXXXX = "XXXXX")
   
   # Replace genre strings with their corresponding numbers
   movie_cleaned_df$genre_category <- case_when(

@@ -1,0 +1,99 @@
+---
+title: "Q1.4"
+output:
+  pdf_document:
+    toc: no
+    number_sections: yes
+    extra_dependencies: ["float"]
+include-before:
+  - \vspace{-0.6in}
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.1in}
+
+urlcolor: blue
+---
+```{r load packages and set options, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(tidyverse) 
+library(magrittr)
+library(knitr)
+library(patchwork)
+library(moments)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+library(readr)
+```
+
+```{r load data, message=FALSE, warning=FALSE, echo=FALSE, results='hide'}
+youtube_data <- read_delim("./data/homework/videos.txt", delim = "\t")
+```
+
+- To assess whether the distribution of the errors is Homoskedastic, there are two ways. One is through the "scale-location" plot and the second way is through the Breusch-Pagan test (bp test).Homoskedasticity would show up on this plot if there is  a flat smoothing curve in the scale location plot.Looking at the plot below, it looks like there is a flat smooth curve. Hence, there is not much evidence of heteroskedasticity in the plot.
+- The bptest() function in R is used to perform the Breusch-Pagan test. The null hypothesis of the Breusch-Pagan test is that the variance of errors are constant across the range of predictor variables(homoskedasticity).The test result includes a test statistic (BP) and a p-value. If the p-value is less than the chosen significance level (e.g., 0.05), we can reject the null hypothesis of homoscedasticity and conclude that there is evidence of heteroscedasticity in the linear regression model. From the bptest results, it is seen that the p-value (2.2e-161) is less than 0.05. We can conclude that there is evidence of some amount of heteroscedasticity in the linear regression model. 
+
+- Since, the Breusch-Pagan test shows amount of heteroskedasticity, a simple and effective solution is to use robust standard errors.Other possible solutions to handle heteroskedasticity is through log transformations, changing the model specification by adding additional variables to the model can help address heteroskedasticity
+
+```{r linear model, echo=FALSE,warning=FALSE,message=FALSE, results='hide'}
+youtube_data_clean <- na.omit(youtube_data)
+
+#Linear model 1 between log(views) as an outcome and  rate and length as predictors
+youtube_data_clean$ln_views <- log(youtube_data_clean$views)
+model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+nrow(youtube_data_clean)
+```
+
+
+```{r predicted vs fitted, warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "Predicted Vs Residuals", fig.align='center', fig.height=4 }
+#plot of prected vs residuals in the model
+#youtube_data_clean %>% 
+#  mutate(
+#    model_pred = predict(model), 
+#    model_resid = resid(model)
+#  ) %>% 
+#  ggplot(aes(model_pred, model_resid)) + 
+#  geom_point() + 
+#  stat_smooth()
+plot(model, which=3)
+```
+
+```{r bp test, echo=FALSE,message=FALSE, warning=FALSE}
+#Running bp test on the model
+bptest_result <- bptest(model)
+# Capturing output of bptest() function as character vector
+bp_output <- capture.output(bptest_result)
+
+# Formatting output using cat()
+cat("Breusch-Pagan Test Results\n")
+cat(bp_output)
+```
+
+```{r log transformation, echo=FALSE, message=FALSE, fig.show='hide', fig.align='center', fig.height=3, warning=FALSE}
+#Linear model 2 between log(views) as an outcome and  rate and log(length) as predictors
+youtube_data_clean$ln_length <- log(youtube_data_clean$length)
+model_one <- lm(ln_views ~ rate + ln_length, data = youtube_data_clean)
+
+
+youtube_data_clean %>% 
+  mutate(
+    model_pred = predict(model_one), 
+    model_resid = resid(model_one)
+  ) %>% 
+  ggplot(aes(model_pred, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+```
+
+```{r scale location plot,echo=FALSE, warning=FALSE, message=FALSE, fig.cap = "scale-location plot", fig.align='center', fig.height=3, fig.show='hide'}
+plot(model)
+hist(model$residuals)
+#plot(model)
+```

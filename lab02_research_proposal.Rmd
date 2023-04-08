@@ -47,11 +47,13 @@ options(tinytex.verbose = TRUE)
 
 
 ```{r warning=FALSE, echo=FALSE, message=FALSE}
-
 df <- data.frame('Budget'='$ amount', 'Revenue'='$ amount', 'Genre'='movie category', "Movie title"='count', 'Number of Cast and Crew'='count', 'Number of production companies'='count', 'Release Date'='Date', check.names = FALSE) 
-
-df %>% kable() %>% row_spec(0,bold=TRUE) %>% kable_styling(latex_options="scale_down")
-
+#df %>% kable() %>% row_spec(0,bold=TRUE) %>% kable_styling(latex_options="scale_down")
+df %>% 
+  kable() %>% 
+  row_spec(0, bold = TRUE) %>% 
+  kable_styling(latex_options = "hold_position") %>% 
+  kable_styling(latex_options = "scale_down")
 ```
 
 ```{r load data, echo=FALSE,results='hide', message=FALSE, warning=FALSE}
@@ -69,16 +71,12 @@ nrow_cleaned
 ```{r data exploration,fig.align='center', fig.height=3, warning=FALSE, echo=FALSE,message=FALSE}
 # randomly sample 30% of rows from movie_filtered_df
 set.seed(123) # set seed for reproducibility
-
 #Split data into 30% and 70% using caret's createDataPartition function
 index <- createDataPartition(movie_filtered_df$revenue, p = 0.3, list = FALSE)
-
 # Create the 30% sample for performing data exploration
 movie_sample_exploration <- movie_filtered_df[index,]
-
 # Create the 70% sample for performing statistical test
 movie_sample_statistical <- movie_filtered_df[-index,]
-
 #Create a scatterplot between Budget and Revenue
 ggplot(movie_sample_exploration, aes(x=budget/100000, y=revenue/1000000,  color=genre_category)) +
   geom_point() +

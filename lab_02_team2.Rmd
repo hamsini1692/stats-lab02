@@ -52,11 +52,9 @@ nrow_original <- nrow(movie_data)
 # Call the function to preprocess the data
 movie_filtered_df <- data_cleaning()
 nrow_cleaned <- nrow(movie_filtered_df)
-nrow_cleaned
-View(movie_filtered_df)
 ```
 
-```{r data exploration,fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
+```{r data exploration}
 # randomly sample 30% of rows from movie_filtered_df
 set.seed(123) # set seed for reproducibility
 
@@ -71,15 +69,118 @@ movie_sample_statistical <- movie_filtered_df[-index,]
 
 movie_sample_exploration <- movie_filtered_df %>% 
   sample_frac(0.3, replace = FALSE)
+head(movie_sample_exploration)
+```
 
-ggplot(movie_sample_exploration, aes(x=budget/1000000, y=revenue/1000000, color=vote_count)) +
-  geom_point() +
+```{r data exploration, fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
+ggplot(movie_sample_exploration, aes(x=budget/1000000, y=revenue/1000000)) +
+  geom_point(color='darkblue') +
+  geom_smooth(se=FALSE) +
   xlab("Budget") +
   ylab("Revenue") +
   ggtitle("Budget vs Revenue Scatter Plot") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
+
+ggplot(movie_sample_exploration, aes(x = title_length, y = revenue)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  labs(x = "Title Length (Number of Characters)", y = "Revenue") +
+  ggtitle("Scatterplot of Title Length vs. Revenue")
+
+ggplot(movie_sample_exploration, aes(x = runtime, y = revenue)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  labs(x = "Title Length (Number of Characters)", y = "Revenue") +
+  ggtitle("Scatterplot of Movie Runtime vs. Revenue")
 ```
+
+```{r genere and release date}
+
+movie_sample_statistical_clean <- na.omit(movie_sample_statistical)
+nrow(movie_sample_statistical_clean)
+# create dummy variables for genres
+#dummy_genres <- model.matrix(~0 + movie_sample_statistical_clean$genre_category)
+
+#extract month from release_date
+#movie_sample_statistical_clean$release_month <- as.numeric(format(as.Date(movie_sample_statistical_clean$release_date), "%m"))
+
+
+#dummy_month <- model.matrix(~0 + movie_sample_statistical_clean$release_month)
+
+
+#movie_sample_statistical_clean <- movie_sample_statistical_clean %>%
+#  select(-release_month) %>%
+#  bind_cols(dummy_month)
+
+
+
+movie_sample_statistical_clean <- movie_sample_statistical_clean %>% 
+  mutate(
+    model_preds = predict(model_budget_genres_release), 
+    model_resid = resid(model_budget_genres_release)
+  ) 
+
+#Check for correlations in all variables and figure out which one to drop 
+
+#movie_sample_statistical_clean %>% 
+#  select(budget,total_cast, vote_count, dummy_month, total_production_companies, title_length, model_resid) %>% 
+#  GGally::ggpairs()
+
+# create the regression model
+model_budget_genres_release <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies + title_length + runtime , data = movie_sample_statistical_clean)
+
+
+#model_budget_genres_release$aliased
+model_budget_genres_release$coefficients
+
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+#rse <- get_robust_se(model_budget_genres_release)
+
+# display model summary
+summary(model_budget_genres_release)
+```
+
+```{r statstesttotal_cast }
+regression_model_1 <- lm(revenue ~ budget + total_production_companies + vote_count + title_length, data = movie_sample_statistical_clean)
+
+
+regression_model_2 <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies + title_length , data = movie_sample_statistical_clean)
+
+
+#rse <- coeftest(regression, vcov = vcovHC)
+#rse
+#rse1 <- coeftest(regression1, vcov = vcovHC)
+#rse1
+
+
+coeftest(regression_model_1, vcov = vcovHC(regression_model_1))
+coeftest(regression_model_2, vcov = vcovHC(regression_model_2))
+summary(regression_model_1)
+summary(regression_model_2)
+
+#waldtest(regression, regression1, vcov = vcovHC(regression, type = "HC0"))
+```
+
+
+```{r results='asis', echo=FALSE, warning=FALSE, results='hide'}
+#This function returns the robust standard error
+model <- lm(revenue ~ budget + total_production_companies + vote_count + title_length, data = movie_sample_statistical_clean)
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+rse <- get_robust_se(model)
+#Stargazer table along with robust standard error
+#Stargazer table along with robust standard error
+stargazer(model, type = "text", omit.stat = "f",se=list(rse), star.cutoffs = c(0.05, 0.01, 0.001),
+title = "Stargazer Table for the linear model" ,header=FALSE)
+```
+
+
 
 ```{r heat map, fig.align='center', fig.height=3, fig.width=5}
 library(corrplot)
@@ -103,6 +204,7 @@ ggplot(monthly_revenue_all_years, aes(x = month, y = revenue)) +
   labs(x = "Month", y = "Total Revenue") +
   theme_minimal()   
 ```
+
 ```{r holiday check}
 library(ggplot2)
 library(lubridate)
@@ -110,13 +212,13 @@ library(bizdays)
 library(timeDate)
 
 # Filter the data to include only movies released after 2011
-movie_sample_filtered <- movie_sample_exploration %>% 
-  filter(year(release_date) >= 2012)
+movie_sample_filtered <- movie_sample_exploration 
+#  filter(year(release_date) >= 2012)
 
 # Calculate the average revenue per month for all years from 2012 to 2022
 monthly_revenue_all_years <- movie_sample_filtered %>%
   group_by(month = month(release_date, label = TRUE)) %>%
-  summarise(mean_revenue = mean(revenue, na.rm = TRUE))
+  summarise(mean_revenue = revenue)
 
 # Plot the average revenue per month for all years from 2012 to 2022
 ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue, fill = month)) +
@@ -126,10 +228,10 @@ ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue, fill = month)
   theme_minimal()
 
 # Create a scatter plot of budget vs. revenue, colored by month
-ggplot(movie_sample_filtered, aes(x = budget, y = revenue, color = month(release_date, label = TRUE))) +
+ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue,label = TRUE)) +
   geom_point() +
   scale_color_brewer(palette = "Dark2") +
-  labs(x = "Budget", y = "Revenue", color = "Month") +
+  labs(x = "Month", y = "Revenue", color = "Month") +
   theme_minimal()
 
 
@@ -147,11 +249,46 @@ ggplot(movie_sample_filtered_sept_to_dec, aes(x = budget, y = revenue, color = m
 
 
 ```{r scatter plot, fig.align='center', fig.height=3, fig.width=5}
-ggplot(movie_filtered_df, aes(x=budget, y=revenue,  color=vote_count)) +
+ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=genre_category)) +
   geom_point() +
   xlab("Budget") +
   ylab("Revenue") +
   ggtitle("Budget vs Revenue Scatter Plot")
+```
+
+```{r standard error}
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+rse <- get_robust_se(model)
+```
+
+```{r estimate models}
+library(car)
+model_true <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies, 
+                 data = movie_sample_statistical)
+coeftest(model_true)
+```
+
+```{r models}
+vif(model_true)
+```
+
+
+```{r, message = FALSE}
+movie_sample_statistical %>% 
+  select(budget, total_cast, vote_count, total_production_companies, model_resid) %>% 
+  GGally::ggpairs()
+```
+
+
+
+```{r table}
+library(tidyverse)
+library(stargazer) 
+library(sandwich)
+stargazer(model_true, type="text", omit.stat = 'all')
 ```
 
 

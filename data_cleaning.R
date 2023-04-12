@@ -12,18 +12,18 @@ data_cleaning <- function() {
   #fill blank release date values with NA
   movie_df$release_date[movie_df$release_date == ""] <- NA
   
-  movie_df$budget <- ifelse(is.na(movie_df$budget), 0, movie_df$budget)
-  movie_df$revenue <- ifelse(is.na(movie_df$revenue), 0, movie_df$revenue)
+  # Convert budget and revenue columns to numeric
+  movie_df$budget <- as.numeric(movie_df$budget)
+  movie_df$revenue <- as.numeric(movie_df$revenue)
+
+
+  #creating column called title_length, total_cast,total_production_companies for calculating title length, total cast and crew and number of production companies
+  movie_df$title_length <- nchar(movie_df$title)
+  movie_df$total_cast <- str_count(movie_df$credits, "-") + 1
+  movie_df$total_production_companies <- str_count(movie_df$production_companies, "-") + 1
   
   movie_cleaned_df <- filter(movie_df, budget > 999, revenue > 999, (status %in% c("Released")),!(budget %in% c(5000000000, 800000000)))
   movie_cleaned_df$genres <- replace(movie_cleaned_df$genres, is.na(movie_cleaned_df$genres), "XXXXX")
-
-  #create a genre map to assign numbers to the categories 
-  #genre_map <- c(Action = 1, Adventure = 2, Animation = 3, Comedy = 4, Crime = 5,
-  #               Documentary = 6, Drama = 7, Family = 8, Fantasy = 9, History = 10,
-  #              Horror = 11, Music = 12, Mystery = 13, Romance = 14, 
-  #               `Science Fiction` = 15, Thriller = 16, `TV Movie` = 17,
-  #               War = 18, Western = 19, XXXXX = 0)
   
   genre_map <- c(Action = "Action", Adventure = "Adventure", Animation = "Animation", Comedy = "Comedy", Crime = "Crime",
                  Documentary = "Documentary", Drama = "Drama", Family = "Family", Fantasy = "Fantasy", History = "History",
@@ -55,10 +55,19 @@ data_cleaning <- function() {
     TRUE ~ genre_map["XXXXX"]
   )
   
-  #creating column called title_length, total_cast,total_production_companies for calculating title length, total cast and crew and number of production companies
-  movie_cleaned_df$title_length <- nchar(movie_cleaned_df$title)
-  movie_cleaned_df$total_cast <- str_count(movie_cleaned_df$credits, "-") + 1
-  movie_cleaned_df$total_production_companies <- str_count(movie_cleaned_df$production_companies, "-") + 1
+  #as the valuw of runtime is insignificant after 300 minutes, we can drop them and call as an outlier
+  movie_cleaned_df <- movie_cleaned_df[movie_cleaned_df$runtime <= 300, ]
+
+  #remove na values from the covariates
+  movie_cleaned_df$runtime <- na.omit(movie_cleaned_df$runtime)
+  movie_cleaned_df$vote_count <- na.omit(movie_cleaned_df$vote_count)
+  movie_cleaned_df$budget <- na.omit(movie_cleaned_df$budget)
+  movie_cleaned_df$revenue <- na.omit(movie_cleaned_df$revenue)
+  movie_cleaned_df$popularity <- na.omit(movie_cleaned_df$popularity)
+  movie_cleaned_df$title_length <- na.omit(movie_cleaned_df$title_length)
+  movie_cleaned_df$total_cast <- na.omit(movie_cleaned_df$total_cast)
+  
+  
   
   #Return the preprocessed data frame
   return(movie_cleaned_df)

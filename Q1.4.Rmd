@@ -37,22 +37,31 @@ library(readr)
 youtube_data <- read_delim("./data/homework/videos.txt", delim = "\t")
 ```
 
-- To assess whether the distribution of the errors is Homoskedastic, there are two ways. One is through the "scale-location" plot and the second way is through the Breusch-Pagan test (bp test).Homoskedasticity would show up on this plot if there is  a flat smoothing curve in the scale location plot.Looking at the plot below, it looks like there is a flat smooth curve. Hence, there is not much evidence of heteroskedasticity in the plot.
-- The bptest() function in R is used to perform the Breusch-Pagan test. The null hypothesis of the Breusch-Pagan test is that the variance of errors are constant across the range of predictor variables(homoskedasticity).The test result includes a test statistic (BP) and a p-value. If the p-value is less than the chosen significance level (e.g., 0.05), we can reject the null hypothesis of homoscedasticity and conclude that there is evidence of heteroscedasticity in the linear regression model. From the bptest results, it is seen that the p-value (2.2e-161) is less than 0.05. We can conclude that there is evidence of some amount of heteroscedasticity in the linear regression model. 
+```{r linear model, echo=FALSE,warning=FALSE,message=FALSE, results='hide', fig.show='hide'}
+youtube_data_clean <- na.omit(youtube_data[c("length", "rate", "views")])
 
-- Since, the Breusch-Pagan test shows amount of heteroskedasticity, a simple and effective solution is to use robust standard errors.Other possible solutions to handle heteroskedasticity is through log transformations, changing the model specification by adding additional variables to the model can help address heteroskedasticity
-
-```{r linear model, echo=FALSE,warning=FALSE,message=FALSE, results='hide'}
-youtube_data_clean <- na.omit(youtube_data)
-
-#Linear model 1 between log(views) as an outcome and  rate and length as predictors
 youtube_data_clean$ln_views <- log(youtube_data_clean$views)
-model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+
+hist(youtube_data_clean$length, breaks=50, xlim = c(0,1000))
+youtube_data_clean <- youtube_data_clean[youtube_data_clean$length/60 <= 11, ]
 nrow(youtube_data_clean)
+model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+summary(model)
+
 ```
 
+- To assess whether the distribution of the errors is Homoscedastic, there are two ways. One is through the "scale-location" plot and the second way is through the Breusch-Pagan test (bp test). Homoscedasticity would show up on the scale-location plot, if the red line on the plot is roughly horizontal. From Figure 1 plot,we see that the spread of the residuals is roughly equal at all the fitted values, highlighting evidences for Homoscedasticity. This plot does not show any strong evidence for heteroscedasticity.
 
 ```{r predicted vs fitted, warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "Predicted Vs Residuals", fig.align='center', fig.height=4 }
+plot(model, which=3)
+```
+
+- The bptest() function in R is used to perform the Breusch-Pagan test. The null hypothesis(H0) of the Breusch-Pagan test is that the residuals are Homoscedastic.The alternate hypothesis(Ha) is that the residuals are heteroscedastic. If the p-value from the test is less than the chosen significance level (e.g., 0.05), we can reject the null hypothesis of homoscedasticity. From the bptest results, it is seen that the p-value (2.2e-161) is less than 0.05 and we can reject the null hypothesis and conclude that there is strong evidence of heteroscedasticity in the linear regression model. 
+- The Breusch-Pagan test is a statistical test and a sensitive test and no statistical tests can give perfect results.In this case,the Breusch-Pagan test shows evidences of heteroskedasticity. In this case, due to the large sample size, we should still continue with the model and use effective solutions like  robust standard errors to handle heteroskedasticity.
+
+- Note: The columns having null values are dropped in the dataset. To make the visualization better, the length column in seconds is transformed to minutes. The median views for videos greater than 11 min and videos smaller than 11 mins are very different. This is evident from histogram distribution of the video length variable which is right skewed, hence, the video length greater than 11 min are not significant and are dropped from dataset.
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "Predicted Vs Residuals", fig.align='center', fig.height=4, fig.show='hide'}
 #plot of prected vs residuals in the model
 #youtube_data_clean %>% 
 #  mutate(
@@ -97,3 +106,5 @@ plot(model)
 hist(model$residuals)
 #plot(model)
 ```
+
+

@@ -4,11 +4,15 @@ subtitle: "Datasci 203, Section 10, Group 2, Lab 2"
 author: 'Divya Menghani, Hamsini Sankaran, Israel Ayode, Sivakumar Thiyagarajan'
 geometry: margin=0.5cm
 output:
-  pdf_document
+  pdf_document:
+    toc: no
+    number_sections: yes
+    extra_dependencies: ["float"]
+include-before:
+  - \vspace{-0.6in}
 header-includes:
- \usepackage{wrapfig}
- \usepackage{float}
- \floatplacement{figure}{H}
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.1in}
 ---
 
 ```{r setup, include=FALSE}
@@ -33,6 +37,7 @@ library(tidyr)
 library(gridExtra)
 library(kableExtra)
 library(readr)
+library(car)
 source("data_cleaning.R")
 library(ggplot2)
 theme_set(theme_bw())
@@ -52,6 +57,21 @@ nrow_original <- nrow(movie_data)
 # Call the function to preprocess the data
 movie_filtered_df <- data_cleaning()
 nrow_cleaned <- nrow(movie_filtered_df)
+
+filtered_rows <- nrow(movie_filtered_df)
+difference <- nrow_original - filtered_rows
+difference
+
+any(is.na(movie_filtered_df$revenue)) # no na 
+any(is.na(movie_filtered_df$budget))# no na 
+any(is.na(movie_filtered_df$runtime))# yes na 
+any(is.na(movie_filtered_df$status))# no na 
+any(is.na(movie_filtered_df$vote_average))# no na 
+any(is.na(movie_filtered_df$vote_count))# no na 
+any(is.na(movie_filtered_df$total_cast))# yes
+any(is.na(movie_filtered_df$title_length))#. no na 
+any(is.na(movie_filtered_df$total_production_companies))# yes 
+nrow_cleaned
 ```
 
 ```{r data exploration}
@@ -69,11 +89,159 @@ movie_sample_statistical <- movie_filtered_df[-index,]
 
 movie_sample_exploration <- movie_filtered_df %>% 
   sample_frac(0.3, replace = FALSE)
+
+
+rows_exploratrion <- nrow(movie_sample_exploration)
+rows_exploratrion
+
 head(movie_sample_exploration)
 ```
 
+```{r heat map, fig.align='center', fig.height=3, fig.width=5}
+library(corrplot)
+library(Hmisc)
+selected_columns <- movie_sample_exploration %>%
+  dplyr::select(budget, revenue, runtime,vote_count, title_length,  popularity)
+cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+```{r data exploration unique BLP, fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
+#1. budget
+hist(movie_sample_exploration$budget/1000000, col = "blue", 
+     main = "Distribution of budget",
+     xlab = "Budget", ylab = "Number of movies")
+
+#applying log treansformation
+movie_sample_exploration$log_budget <- log(movie_sample_exploration$budget/1000000)
+hist(movie_sample_exploration$log_budget, col = "blue", 
+     main = "Distribution of log budget",
+     xlab = "Budget", ylab = "Number of movies")
+
+#vote count. 
+hist(movie_sample_exploration$vote_count, col = "red", 
+     main = "Distribution of vote count",
+     xlab = "vote count", ylab = "Number of movies")
+movie_sample_exploration$log_vote_count <- log(movie_sample_exploration$vote_count)
+
+hist(movie_sample_exploration$log_vote_count, col = "red", 
+     main = "Distribution of lof vote count",
+     xlab = "vote count", ylab = "Number of movies")
+
+
+#production companies
+#hist(movie_sample_exploration$total_production_companies, col = "purple", 
+#     main = "Distribution of production comnpanies",
+ #    xlab = "production comnpanies", ylab = "Number of movies")
+
+
+#movie_sample_exploration$log_total_prod_companies <- #log(movie_sample_exploration$total_production_companies)
+
+#production companies
+#hist(movie_sample_exploration$log_total_prod_companies, col = "purple", 
+ #    main = "Distribution of log production comnpanies",
+ #    xlab = "production comnpanies", ylab = "Number of movies")
+
+#title length
+hist(movie_sample_exploration$title_length, col = "yellow", 
+     main = "Distribution of title_length",
+     xlab = "title_length", ylab = "Number of movies")
+
+movie_sample_exploration$log_title_length <- log(movie_sample_exploration$title_length)
+
+#title length
+hist(movie_sample_exploration$log_title_length, col = "yellow", 
+     main = "Distribution of title_length",
+     xlab = "title_length", ylab = "Number of movies")
+
+#run time
+hist(movie_sample_exploration$runtime, col = "green", 
+     main = "Distribution of title_length",
+     xlab = "runtime", ylab = "Number of movies")
+
+movie_sample_exploration$log_run_time <- log(movie_sample_exploration$runtime)
+
+hist(movie_sample_exploration$log_run_time, col = "green", 
+     main = "Distribution of title_length",
+     xlab = "log runtime", ylab = "Number of movies")
+
+#total cast
+#hist(movie_sample_exploration$total_cast, col = "orange", 
+#     main = "Distribution of total cast",
+#     xlab = "total cast", ylab = "Number of movies")
+
+#movie_sample_exploration$log_total_cast <- log(movie_sample_exploration$total_cast)
+
+#hist(movie_sample_exploration$log_total_cast, col = "orange", 
+ #    main = "Distribution of total cast",
+#     xlab = "log total cast", ylab = "Number of movies")
+
+#revenue
+hist(movie_sample_exploration$revenue/1000000, col = "pink", 
+     main = "Distribution of revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+#applying log transformation
+movie_sample_exploration$log_revenue <- log(movie_sample_exploration$revenue/1000000)
+hist(movie_sample_exploration$log_revenue, col = "pink", 
+     main = "Distribution of log revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+hist(movie_sample_exploration$runtime, col = "lightblue", 
+     main = "Distribution of runtime",
+     xlab = "runtime", ylab = "Number of movies")
+
+```
+
+```{r linear model}
+# removed production_companies, total_cast
+movie_sample_statistical_clean$log_budget <-log(movie_sample_statistical_clean$budget/1000000)
+movie_sample_statistical_clean$log_vote_count <-log(movie_sample_statistical_clean$vote_count)
+movie_sample_statistical_clean$log_title_length <- log(movie_sample_statistical_clean$title_length)
+movie_sample_statistical_clean$log_revenue <-log(movie_sample_statistical_clean$revenue/1000000)
+
+movie_sample_statistical_clean$log_run_time <-log(movie_sample_statistical_clean$runtime)
+
+movie_sample_statistical_clean$log_total_cast <-log(movie_sample_statistical_clean$total_cast)
+
+model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical_clean)
+summary(model)
+                                                     
+model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical_clean)
+summary(model_1)
+
+model_2 <- lm(log_revenue ~ log_budget + vote_count + log_title_length , data = movie_sample_statistical_clean)
+summary(model_2)
+
+model_3 <- lm(log_revenue ~ log_budget + vote_count+  log_title_length + runtime, data = movie_sample_statistical_clean)
+summary(model_3)
+
+model_4 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity , data = movie_sample_statistical_clean)
+summary(model_4)
+```
+```{r startgazer results='asis', echo=FALSE, warning=FALSE}
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+rse <- get_robust_se(model_3)
+#Stargazer table along with robust standard error
+#Stargazer table along with robust standard error
+stargazer(model_3, type = "text", omit.stat = "f",se=list(rse), star.cutoffs = c(0.05, 0.01, 0.001),
+title = "Stargazer Table for the linear model" ,header=FALSE)
+```
+```{r models}
+vif(model_3)
+```
+
+```{r normally distributed errors}
+bptest_result <- bptest(model_4)
+bptest_result
+```
 ```{r data exploration, fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
-ggplot(movie_sample_exploration, aes(x=budget/1000000, y=revenue/1000000)) +
+ggplot(movie_sample_exploration, 
+       aes(x=budget/1000000, y=revenue/1000000, color=vote_count)) +
   geom_point(color='darkblue') +
   geom_smooth(se=FALSE) +
   xlab("Budget") +
@@ -95,102 +263,63 @@ ggplot(movie_sample_exploration, aes(x = runtime, y = revenue)) +
   ggtitle("Scatterplot of Movie Runtime vs. Revenue")
 ```
 
+
+
+
+```{r plots}
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+
+rse1 <- coeftest(model, vcov = vcovHC)
+rse1
+
+rse2 <- coeftest(model_1, vcov = vcovHC)
+rse2
+
+rse3 <- coeftest(model_2, vcov = vcovHC)
+rse3
+
+rse4 <- coeftest(model_3, vcov = vcovHC)
+rse4
+
+rse5 <- coeftest(model_4, vcov = vcovHC)
+rse5
+summary(model_3)
+```
+```{r}
+waldtest(model, model_1, vcov = vcovHC(model_1, type = "HC0"))
+waldtest(model_1, model_2, vcov = vcovHC(model_2, type = "HC0"))
+waldtest(model_2, model_3, vcov = vcovHC(model_3, type = "HC0"))
+waldtest(model_3, model_4, vcov = vcovHC(model_4, type = "HC0"))
+```
+
+```{r homescedasticity}
+plot(model, which=3)
+plot(model_1, which=3)
+plot(model_2, which=3)
+plot(model_3, which=3)
+plot(model_4, which=3)
+
+```
+
 ```{r genere and release date}
-
-movie_sample_statistical_clean <- na.omit(movie_sample_statistical)
-nrow(movie_sample_statistical_clean)
-# create dummy variables for genres
-#dummy_genres <- model.matrix(~0 + movie_sample_statistical_clean$genre_category)
-
-#extract month from release_date
-#movie_sample_statistical_clean$release_month <- as.numeric(format(as.Date(movie_sample_statistical_clean$release_date), "%m"))
-
-
-#dummy_month <- model.matrix(~0 + movie_sample_statistical_clean$release_month)
-
-
-#movie_sample_statistical_clean <- movie_sample_statistical_clean %>%
-#  select(-release_month) %>%
-#  bind_cols(dummy_month)
-
-
 
 movie_sample_statistical_clean <- movie_sample_statistical_clean %>% 
   mutate(
-    model_preds = predict(model_budget_genres_release), 
-    model_resid = resid(model_budget_genres_release)
+    model_preds = predict(model_3), 
+    model_resid = resid(model_3)
   ) 
 
 #Check for correlations in all variables and figure out which one to drop 
 
-#movie_sample_statistical_clean %>% 
-#  select(budget,total_cast, vote_count, dummy_month, total_production_companies, title_length, model_resid) %>% 
-#  GGally::ggpairs()
+movie_sample_statistical_clean %>% 
+  select(budget,vote_count,title_length, runtime, model_resid) %>% 
+  GGally::ggpairs()
 
-# create the regression model
-model_budget_genres_release <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies + title_length + runtime , data = movie_sample_statistical_clean)
-
-
-#model_budget_genres_release$aliased
-model_budget_genres_release$coefficients
-
-get_robust_se <- function(model) {
-  se <- sqrt(diag(vcovHC(model)))
-  return(se)
-}
-#rse <- get_robust_se(model_budget_genres_release)
-
-# display model summary
-summary(model_budget_genres_release)
 ```
 
-```{r statstesttotal_cast }
-regression_model_1 <- lm(revenue ~ budget + total_production_companies + vote_count + title_length, data = movie_sample_statistical_clean)
-
-
-regression_model_2 <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies + title_length , data = movie_sample_statistical_clean)
-
-
-#rse <- coeftest(regression, vcov = vcovHC)
-#rse
-#rse1 <- coeftest(regression1, vcov = vcovHC)
-#rse1
-
-
-coeftest(regression_model_1, vcov = vcovHC(regression_model_1))
-coeftest(regression_model_2, vcov = vcovHC(regression_model_2))
-summary(regression_model_1)
-summary(regression_model_2)
-
-#waldtest(regression, regression1, vcov = vcovHC(regression, type = "HC0"))
-```
-
-
-```{r results='asis', echo=FALSE, warning=FALSE, results='hide'}
-#This function returns the robust standard error
-model <- lm(revenue ~ budget + total_production_companies + vote_count + title_length, data = movie_sample_statistical_clean)
-get_robust_se <- function(model) {
-  se <- sqrt(diag(vcovHC(model)))
-  return(se)
-}
-rse <- get_robust_se(model)
-#Stargazer table along with robust standard error
-#Stargazer table along with robust standard error
-stargazer(model, type = "text", omit.stat = "f",se=list(rse), star.cutoffs = c(0.05, 0.01, 0.001),
-title = "Stargazer Table for the linear model" ,header=FALSE)
-```
-
-
-
-```{r heat map, fig.align='center', fig.height=3, fig.width=5}
-library(corrplot)
-library(Hmisc)
-selected_columns <- movie_sample_exploration %>%
-  dplyr::select(budget, revenue, runtime, vote_count, vote_average, title_length, total_cast, popularity,total_production_companies)
-cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
-corrplot(cor_matrix, method = "color", type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
-```
 
 ```{r date}
 library(ggplot2)
@@ -256,54 +385,8 @@ ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=genre_category)
   ggtitle("Budget vs Revenue Scatter Plot")
 ```
 
-```{r standard error}
-get_robust_se <- function(model) {
-  se <- sqrt(diag(vcovHC(model)))
-  return(se)
-}
-rse <- get_robust_se(model)
-```
-
-```{r estimate models}
-library(car)
-model_true <- lm(revenue ~ budget + total_cast + vote_count + total_production_companies, 
-                 data = movie_sample_statistical)
-coeftest(model_true)
-```
-
-```{r models}
-vif(model_true)
-```
 
 
-```{r, message = FALSE}
-movie_sample_statistical %>% 
-  select(budget, total_cast, vote_count, total_production_companies, model_resid) %>% 
-  GGally::ggpairs()
-```
-
-
-
-```{r table}
-library(tidyverse)
-library(stargazer) 
-library(sandwich)
-stargazer(model_true, type="text", omit.stat = 'all')
-```
-
-
-```{r load data, message = FALSE, include=FALSE}
-ames <- read.csv("./data/final/ames_confirm.csv") %>% 
-  rename_with(~ tolower(gsub(".", "_", .x, fixed=TRUE))) %>% 
-  mutate(
-    ms_subclass = factor(ms_subclass),
-    age = yr_sold - year_built,
-    remodeled = year_remod_add > year_built + 1,
-    immediate_remodel = year_remod_add == year_built + 1,
-    years_since_remod = remodeled * (yr_sold - year_remod_add),
-    age_at_remod = remodeled * (year_remod_add - year_built)
-    )
-```
 
 ## Introduction 
 
@@ -315,7 +398,8 @@ This study estimates the economic value for remodeling a home empirically, utili
 
 ## Data and Methodology
 
-The data in this study comes from the Ames, Iowa Assessor. It was compiled and made publicly available by Dean De Cock.^[De Cock, Dean. "Ames, Iowa: Alternative to the Boston housing data as an end of semester regression project." Journal of Statistics Education 19.3 (2011).] Each row in the data represents a home sale in Ames between `r min(ames$yr_sold)` to `r max(ames$yr_sold)`. I performed all exploration and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow(ames)` rows, was used to generate the statistics in this report.
+We gathered the dataset from Kaggle. The dataset comprises metadata for more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns. It is relevant and provides an opportunity to analyze the relationship between the budget and the revenue of the movies. The dataset contains unique information on films, with each movie being distinct from the others and identified by an id column in the dataset. Additionally, the distribution of the X and Y concept is identical, satisfying the assumptions of IID. Because each movie is not subject to multiple samplings, the dataset is regarded as cross-sectional.Each row in the data represents a movie  between `r min(ames$yr_sold)` to `r max(ames$yr_sold)`. I performed all exploration and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow(movie_filtered_df)` rows, was used to generate the statistics in this report.
+.
 
 ```{r filter data, include=FALSE}
 ## count number of homes built before 1950
@@ -342,7 +426,7 @@ frac_immediate_after_2000 <- ames %>%
   summarize(percent = mean(immediate_remodel))
 ```
 
-Detecting which homes are remodeled requires some care. The year built variable represents the original construction date, while the year remodeled variable contains the time of the last remodel before the sale. According to the data dictionary, if a home was never remodeled, the year remodeled and year built should be the same. Because the year remodel variable is censored at 1950, there is no way to reliably determine which homes built in 1950 or earlier were never remodeled. I filter out the `r num_pre_1950` homes in this category, leaving `r num_after_1950` observations. There are also `r num_immediate_remodel` homes recorded as remodeled one year after being built. In fact, this includes `r frac_immediate_after_2000['percent'] %>% round(2)` of homes built after 2000. Because that fraction is implausibly high, I interpret these records as showing two dates for what is really a single construction. I therefore consider a house to be remodeled if there is at least a 2-year difference between the year build year and the year remodeled. As a robustness check, I reran the analysis using a 1-year difference, and found that this does not cause any substantial change in the key regression coefficients.
+Finding the factors influencing the revenue needs a lot of data analysis and research. The year built variable represents the original construction date, while the year remodeled variable contains the time of the last remodel before the sale. According to the data dictionary, if a home was never remodeled, the year remodeled and year built should be the same. Because the year remodel variable is censored at 1950, there is no way to reliably determine which homes built in 1950 or earlier were never remodeled. I filter out the `r num_pre_1950` homes in this category, leaving `r num_after_1950` observations. There are also `r num_immediate_remodel` homes recorded as remodeled one year after being built. In fact, this includes `r frac_immediate_after_2000['percent'] %>% round(2)` of homes built after 2000. Because that fraction is implausibly high, I interpret these records as showing two dates for what is really a single construction. I therefore consider a house to be remodeled if there is at least a 2-year difference between the year build year and the year remodeled. As a robustness check, I reran the analysis using a 1-year difference, and found that this does not cause any substantial change in the key regression coefficients.
 
 To operationalize economic value, I divide the sale price of a home by the number of square feet of above-ground living area. This form was chosen to best fit the relationship seen in exploratory plots. Figure 1 plots price per square feet as a function of age, with remodeled homes shown in blue and non-remodeled in red. There is a general negative relationship between value and age. Interestingly, among homes that are less than 15 years old, remodeled homes are worth less than non-remodeled homes on the average.
 
@@ -370,7 +454,7 @@ I am interested in the difference in value between two counterfactuals: one in w
 Exploratory plots suggest that both effects exist and that both are roughly linear. I therefore create regression models in which the "boost" from remodeling increases by a fixed amount with the age of the house when remodeled, and also changes by another fixed amount with each year that passes after the remodel. In other words, I fit regressions of the form,
 
 $$
-  \widehat{price /sqrtft}=\beta_0 + \beta_1\cdot R \cdot (year\ remodeled - year\ built) + \beta_2 \cdot R \cdot (year\ sold - year\ remodeled) + \mathbf{Z\gamma}
+  \widehat{revenue}=\beta_0 + \beta_1\cdot Budget + \beta_2 \cdot votecount + \beta_3 \cdot title length + \beta_4 \cdot run time +  \mathbf{Z\gamma}
 $$
 
 where $R$ is an indicator for remodeling, $\beta_1$ represents the immediate increase in value per year the house existed before remodeling, $\beta_2$ represents the change in the value increase for each year that passes after the remodel, $\mathbf{Z}$ is a row vector of additional covariates, and $\mathbf{\gamma}$ is a column vector of coefficients.

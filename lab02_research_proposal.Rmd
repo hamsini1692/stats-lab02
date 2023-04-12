@@ -50,7 +50,7 @@ df %>% kable() %>% row_spec(0,bold=TRUE) %>% kable_styling(latex_options="hold_p
 ```
 
 ```{r load data, echo=FALSE,results='hide', message=FALSE, warning=FALSE}
-movie_data <- read_csv("./datasets/movies.csv")
+movie_data <- read_csv("./datasets/movies_data.csv")
 nrow_original <- nrow(movie_data)
 ```
 

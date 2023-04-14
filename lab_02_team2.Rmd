@@ -25,8 +25,6 @@ library(magrittr)
 library(stargazer)
 library(sandwich)
 library(lmtest)
-library(tidyverse) 
-library(magrittr)
 library(knitr)
 library(patchwork)
 library(moments)
@@ -39,7 +37,9 @@ library(kableExtra)
 library(readr)
 library(car)
 source("data_cleaning.R")
-library(ggplot2)
+library(corrplot)
+library(Hmisc)
+library(cowplot)
 theme_set(theme_bw())
 options(tinytex.verbose = TRUE)
 knitr::opts_chunk$set(echo=FALSE, message=FALSE)
@@ -67,7 +67,7 @@ difference
 
 ```
 
-```{r data exploration, echo=FALSE, message=FALSE, warning=FALSE}
+```{r data exploration, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # randomly sample 30% of rows from movie_filtered_df
 set.seed(123) # set seed for reproducibility
 
@@ -107,17 +107,29 @@ We gathered the dataset from Kaggle. The dataset comprises metadata for more tha
 
 To determine the factors that affect movie revenue, we need to extensively analyze data and conduct research .To analyze the factors that affect movie revenue, we have defined inclusion criteria that could potentially impact the dependent variable "revenue" (Y), and selected "budget" as the independent variable. We are focusing on movies that have been officially released to the public, and to refine our analysis, we are excluding movies with budgets or revenues exceeding $999 and budget values of $5 billion and $800 million. After filtering the data, we are left with a sample size of r filtered_rows observations.
 
-```{r figure_1, echo=FALSE, message=FALSE, fig.cap = "Revenue as a Function of Budget", fig.height = 3, fig.width = 5}
-ggplot(movie_sample_exploration, 
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 3, fig.width = 3}
+selected_columns <- movie_sample_exploration %>%
+  dplyr::select(budget, revenue, runtime, vote_count, title_length, popularity)
+cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
+result_corr <- corrplot(cor_matrix, method = "color",  order = "hclust", 
+         tl.col = "black", tl.srt = 45, type = "upper", tl.cex = 0.6, cl.cex=0.6, title = "Correlation Plot", title.cex=0.8,mar = c(1, 1, 3, 1))
+
+main_plot <- ggplot(movie_sample_exploration, 
        aes(x=budget/1000000, y=revenue/1000000)) +
   geom_point(color='darkblue') +
   geom_smooth(se=FALSE) +
   xlab("Budget") +
   ylab("Revenue") +
-  ggtitle("Budget vs Revenue Scatter Plot") +
+  ggtitle("Budget vs Revenue") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
+
+ggdraw() +
+  draw_plot(result_corr, x = 0.6, y = 0.5, width = 0.4, height = 0.4) + 
+  draw_plot(main_plot)
+
 ```
+
 
 I am interested in analyzing the relationship between movie revenue and budget, and identifying the factors that impact this relationship. To determine the covariates that impact the dependent variable, we have chosen the following variables:
 
@@ -143,7 +155,7 @@ I considered specifications that also include the modeling indicator $R$ by itse
 
 ## Results
 
-```{r fit models}
+```{r fit models, echo=FALSE, message=FALSE, warning=FALSE}
 # removed production_companies, total_cast
 movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
 movie_sample_statistical$log_vote_count <-log(movie_sample_statistical$vote_count)
@@ -152,71 +164,120 @@ movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000
 
 ```
 
-```{r}
+```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
 library(lubridate)
 
 #movie_sample_statistical_test <- movie_sample_statistical
 
-movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
+#movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
+
+movie_sample_statistical$lang_cat <- ifelse(movie_sample_statistical$original_language %in% c("en"), "1", "0")
+
+movie_sample_statistical$release_date_cat <- ifelse(month(movie_sample_statistical$release_date) %in% c(1,12), "1", "0")
+
+#movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
+#ifelse(yday(movie_sample_statistical$release_date) %in% c(1, 327, 365), "1", "0")
 
 # weekend - 1
 # weekday - 0
 
-View(movie_sample_statistical)
+#View(movie_sample_statistical)
 
 ```
 
-```{r}
-table(movie_sample_statistical$release_date_cat)
+```{r, message=FALSE, warning=FALSE, fig.width=10, fig.height=3}
+#table(movie_sample_statistical$release_date_cat)
 
-library("writexl")
+#library("writexl")
 #write_xlsx(movie_sample_statistical,"C:\\Users\\sivak\\Downloads\\movies\\movies_release_cat.xlsx")
 
-ggplot(movie_sample_statistical, 
+plot_release_cat <- ggplot(movie_sample_statistical, 
        aes(x=budget/1000000, y=revenue/1000000, color=release_date_cat)) +
   geom_point() +
   geom_smooth(se=FALSE) +
   xlab("Budget") +
   ylab("Revenue") +
-  ggtitle("Budget vs Revenue Scatter Plot") +
+  ggtitle("Budget vs Revenue") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
 
+plot_lang_cat <- ggplot(movie_sample_statistical, 
+       aes(x=budget/1000000, y=revenue/1000000, color=lang_cat)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+
+(plot_release_cat | plot_lang_cat)
+
 ```
 
-```{r}
+```{r heat map, fig.align='center', fig.height=3, fig.width=5}
 
+```
 
-movie_sample_statistical$log_run_time <-log(movie_sample_statistical$runtime)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical)
-summary(model)
+#summary(model)
+
+#model_11 <- lm(log_revenue ~ log_budget + lang_cat, data = movie_sample_statistical)
+#summary(model_11)
+
+#model_12 <- lm(log_revenue ~ log_budget + lang_cat + runtime + vote_count, data = movie_sample_statistical)
+#summary(model_12)
                                                      
-model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical)
-summary(model_1)
+#model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical)
+#summary(model_1)
 
-model_2 <- lm(log_revenue ~ log_budget + vote_count + log_title_length , data = movie_sample_statistical)
-summary(model_2)
+model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sample_statistical)
+#summary(model_2)
 
-model_3 <- lm(log_revenue ~ log_budget + vote_count+  log_title_length + runtime, data = movie_sample_statistical)
-summary(model_3)
+#model_3 <- lm(log_revenue ~ log_budget + vote_count+  runtime + popularity, data = movie_sample_statistical)
+#summary(model_3)
 
-model_4 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity , data = movie_sample_statistical)
+#model_4 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length, data = movie_sample_statistical)
 
-model_5 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity + release_date_cat, data = movie_sample_statistical)
+model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
+#summary(model_5)
 
-summary(model_5)
+#model_tst <- lm(log_revenue ~ log_budget + vote_count + release_date_cat, data = movie_sample_statistical)
+
+
+#summary(model_5)
 ```
+Table 1 shows the results of three regression models. The co-efficient of the X-concept variable "Budget" is having high statistical significane in all the three models studied. Its point estimates ranges from 0.78 to 0.91. 
 
-```{r display regression table, message=FALSE, echo=FALSE, results='asis'}
+```{r display regression table, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
 get_robust_se <- function(model) {
-  se <- sqrt(diag(vcovHC(model)))
+  se <- sqrt(diag(vcovHC(model, type = "HC1")))
   return(se)
 }
-rse <- get_robust_se(model_3)
+rse_model <- get_robust_se(model)
+#rse_model_1 <- get_robust_se(model_1)
+rse_model_2 <- get_robust_se(model_2)
+#rse_model_3 <- get_robust_se(model_3)
+#rse_model_4 <- get_robust_se(model_4)
+rse_model_5 <- get_robust_se(model_5)
+
 #Stargazer table along with robust standard error
 #Stargazer table along with robust standard error
-stargazer(model_3, type = "text", omit.stat = "f",se=list(rse), star.cutoffs = c(0.05, 0.01, 0.001),
-title = "Stargazer Table for the linear model" ,header=FALSE)
+stargazer(model, model_2, model_5,
+          type = "latex",
+          omit.stat = "f",
+          se=list(rse_model, rse_model_2, rse_model_5),
+          title = "Estimated Regressions",
+          header=FALSE,
+          dep.var.caption  = "Output Variable: Revenue of the movie",
+          covariate.labels = c("Budget", "Vote Count", "Run time", "Popularity", "Movie Title Length", "Release season", "Release Language"),
+          dep.var.labels   = "",
+          digits=3,
+          star.cutoffs = c(0.05, 0.01, 0.001),
+          notes.append = FALSE,
+          notes = "\\parbox[t]{7cm}{$HC_1$ robust standard errors specified in parentheses. Holiday season is Dec/Jan and rest of the months are considered as non-holiday season. Language Category is either English or Non-English movies.}"
+          )
 ```

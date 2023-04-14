@@ -6,7 +6,7 @@ data_cleaning <- function() {
   movie_df <- as.data.frame(movie_data) %>% 
   select(id, title, genres, popularity, production_companies,
            release_date, budget, revenue, runtime, status,
-           vote_average, vote_count, credits)
+           vote_average, vote_count, credits, original_language)
   
   
   #fill blank release date values with NA
@@ -60,7 +60,7 @@ data_cleaning <- function() {
 
   #remove na values from the covariates
   
-  movie_cleaned_df <- na.omit(movie_cleaned_df[c("runtime", "vote_count", "budget", "revenue", "popularity", "title_length", "release_date")])
+  movie_cleaned_df <- na.omit(movie_cleaned_df[c("runtime", "vote_count", "budget", "revenue", "popularity", "title_length", "release_date", "original_language")])
 
   #Return the preprocessed data frame
   return(movie_cleaned_df)

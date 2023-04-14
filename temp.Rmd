@@ -1,0 +1,248 @@
+```{r}
+
+movie_sample_statistical_clean <- movie_sample_statistical_clean %>% 
+  mutate(
+    model_preds = predict(model_3), 
+    model_resid = resid(model_3)
+  ) 
+#Check for correlations in all variables and figure out which one to drop 
+movie_sample_statistical_clean %>% 
+  select(budget,vote_count,title_length, runtime, model_resid) %>% 
+  GGally::ggpairs()
+```
+
+
+
+```{r scatter plot, fig.align='center', fig.height=3, fig.width=5}
+ggplot(movie_sample_exploration, aes(x=budget, y=revenue,  color=genre_category)) +
+  geom_point() +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue Scatter Plot")
+```
+
+
+
+```{r plots}
+get_robust_se <- function(model) {
+  se <- sqrt(diag(vcovHC(model)))
+  return(se)
+}
+
+rse1 <- coeftest(model, vcov = vcovHC)
+rse1
+
+rse2 <- coeftest(model_1, vcov = vcovHC)
+rse2
+
+rse3 <- coeftest(model_2, vcov = vcovHC)
+rse3
+
+rse4 <- coeftest(model_3, vcov = vcovHC)
+rse4
+
+rse5 <- coeftest(model_4, vcov = vcovHC)
+rse5
+summary(model_3)
+```
+
+```{r}
+waldtest(model, model_1, vcov = vcovHC(model_1, type = "HC0"))
+waldtest(model_1, model_2, vcov = vcovHC(model_2, type = "HC0"))
+waldtest(model_2, model_3, vcov = vcovHC(model_3, type = "HC0"))
+waldtest(model_3, model_4, vcov = vcovHC(model_4, type = "HC0"))
+```
+
+```{r homescedasticity}
+plot(model, which=3)
+plot(model_1, which=3)
+plot(model_2, which=3)
+plot(model_3, which=3)
+plot(model_4, which=3)
+```
+
+
+```{r heat map, fig.align='center', fig.height=3, fig.width=5, fig.show='hide'}
+library(corrplot)
+library(Hmisc)
+selected_columns <- movie_sample_exploration %>%
+  dplyr::select(budget, revenue, runtime,vote_count, title_length,  popularity)
+cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
+corrplot(cor_matrix, method = "color", type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+
+```{r unique BLP, fig.align='center',fig.height=3,warning=FALSE,fig.show='hide',echo=FALSE}
+#1. budget
+hist(movie_sample_exploration$budget/1000000, col = "blue", 
+     main = "Distribution of budget",
+     xlab = "Budget", ylab = "Number of movies")
+
+#applying log treansformation
+movie_sample_exploration$log_budget <- log(movie_sample_exploration$budget/1000000)
+hist(movie_sample_exploration$log_budget, col = "blue", 
+     main = "Distribution of log budget",
+     xlab = "Budget", ylab = "Number of movies")
+
+#vote count. 
+hist(movie_sample_exploration$vote_count, col = "red", 
+     main = "Distribution of vote count",
+     xlab = "vote count", ylab = "Number of movies")
+movie_sample_exploration$log_vote_count <- log(movie_sample_exploration$vote_count)
+
+hist(movie_sample_exploration$log_vote_count, col = "red", 
+     main = "Distribution of lof vote count",
+     xlab = "vote count", ylab = "Number of movies")
+
+
+#production companies
+#hist(movie_sample_exploration$total_production_companies, col = "purple", 
+#     main = "Distribution of production comnpanies",
+ #    xlab = "production comnpanies", ylab = "Number of movies")
+
+
+#movie_sample_exploration$log_total_prod_companies <- #log(movie_sample_exploration$total_production_companies)
+
+#production companies
+#hist(movie_sample_exploration$log_total_prod_companies, col = "purple", 
+ #    main = "Distribution of log production comnpanies",
+ #    xlab = "production comnpanies", ylab = "Number of movies")
+
+#title length
+hist(movie_sample_exploration$title_length, col = "yellow", 
+     main = "Distribution of title_length",
+     xlab = "title_length", ylab = "Number of movies")
+
+movie_sample_exploration$log_title_length <- log(movie_sample_exploration$title_length)
+
+#title length
+hist(movie_sample_exploration$log_title_length, col = "yellow", 
+     main = "Distribution of title_length",
+     xlab = "title_length", ylab = "Number of movies")
+
+#run time
+hist(movie_sample_exploration$runtime, col = "green", 
+     main = "Distribution of title_length",
+     xlab = "runtime", ylab = "Number of movies")
+
+movie_sample_exploration$log_run_time <- log(movie_sample_exploration$runtime)
+
+hist(movie_sample_exploration$log_run_time, col = "green", 
+     main = "Distribution of title_length",
+     xlab = "log runtime", ylab = "Number of movies")
+
+#total cast
+#hist(movie_sample_exploration$total_cast, col = "orange", 
+#     main = "Distribution of total cast",
+#     xlab = "total cast", ylab = "Number of movies")
+
+#movie_sample_exploration$log_total_cast <- log(movie_sample_exploration$total_cast)
+
+#hist(movie_sample_exploration$log_total_cast, col = "orange", 
+ #    main = "Distribution of total cast",
+#     xlab = "log total cast", ylab = "Number of movies")
+
+#revenue
+hist(movie_sample_exploration$revenue/1000000, col = "pink", 
+     main = "Distribution of revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+#applying log transformation
+movie_sample_exploration$log_revenue <- log(movie_sample_exploration$revenue/1000000)
+hist(movie_sample_exploration$log_revenue, col = "pink", 
+     main = "Distribution of log revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+hist(movie_sample_exploration$runtime, col = "lightblue", 
+     main = "Distribution of runtime",
+     xlab = "runtime", ylab = "Number of movies")
+
+```
+
+
+
+
+```{r model, variation inflation factor}
+vif(model_3)
+model_3$coefficients
+
+vif(model_4)
+model_4$coefficients
+```
+
+```{r normally distributed errors}
+bptest_result <- bptest(model_4)
+bptest_result
+```
+
+```{r additional plots, fig.align='center', fig.height=3,warning=FALSE, echo=FALSE}
+ggplot(movie_sample_exploration, aes(x = title_length, y = revenue)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  labs(x = "Title Length (Number of Characters)", y = "Revenue") +
+  ggtitle("Scatterplot of Title Length vs. Revenue")
+
+ggplot(movie_sample_exploration, aes(x = runtime, y = revenue)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  labs(x = "Title Length (Number of Characters)", y = "Revenue") +
+  ggtitle("Scatterplot of Movie Runtime vs. Revenue")
+```
+
+
+
+```{r date}
+library(ggplot2)
+library(lubridate)
+
+movie_sample_exploration$month <- format(as.Date(movie_sample_exploration$release_date), "%m")
+monthly_revenue_all_years <- aggregate(revenue ~ month, data = movie_sample_exploration, FUN = sum, na.rm = TRUE)
+
+ggplot(monthly_revenue_all_years, aes(x = month, y = revenue)) +
+  geom_point() +
+  labs(x = "Month", y = "Total Revenue") +
+  theme_minimal()   
+```
+
+```{r holiday check}
+library(ggplot2)
+library(lubridate)
+library(bizdays)
+library(timeDate)
+
+# Filter the data to include only movies released after 2011
+movie_sample_filtered <- movie_sample_exploration 
+#  filter(year(release_date) >= 2012)
+
+# Calculate the average revenue per month for all years from 2012 to 2022
+monthly_revenue_all_years <- movie_sample_filtered %>%
+  group_by(month = month(release_date, label = TRUE)) %>%
+  summarise(mean_revenue = revenue)
+
+# Plot the average revenue per month for all years from 2012 to 2022
+ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue, fill = month)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete(limits = month.abb) +
+  labs(x = "Month", y = "Average Revenue") +
+  theme_minimal()
+
+# Create a scatter plot of budget vs. revenue, colored by month
+ggplot(monthly_revenue_all_years, aes(x = month, y = mean_revenue,label = TRUE)) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "Month", y = "Revenue", color = "Month") +
+  theme_minimal()
+
+
+# Filter the data to only include movies released in September to December
+movie_sample_filtered_sept_to_dec <- movie_sample_filtered %>%
+  filter(month(release_date) %in% 9:12)
+
+# Create a scatter plot of budget vs. revenue, colored by month
+ggplot(movie_sample_filtered_sept_to_dec, aes(x = budget, y = revenue, color = month(release_date, label = TRUE))) +
+  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "Budget", y = "Revenue", color = "Month") +
+  theme_minimal()
+```

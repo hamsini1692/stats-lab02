@@ -59,16 +59,9 @@ data_cleaning <- function() {
   movie_cleaned_df <- movie_cleaned_df[movie_cleaned_df$runtime <= 300, ]
 
   #remove na values from the covariates
-  movie_cleaned_df$runtime <- na.omit(movie_cleaned_df$runtime)
-  movie_cleaned_df$vote_count <- na.omit(movie_cleaned_df$vote_count)
-  movie_cleaned_df$budget <- na.omit(movie_cleaned_df$budget)
-  movie_cleaned_df$revenue <- na.omit(movie_cleaned_df$revenue)
-  movie_cleaned_df$popularity <- na.omit(movie_cleaned_df$popularity)
-  movie_cleaned_df$title_length <- na.omit(movie_cleaned_df$title_length)
-  movie_cleaned_df$total_cast <- na.omit(movie_cleaned_df$total_cast)
   
-  
-  
+  movie_cleaned_df <- na.omit(movie_cleaned_df[c("runtime", "vote_count", "budget", "revenue", "popularity", "title_length")])
+
   #Return the preprocessed data frame
   return(movie_cleaned_df)
 }

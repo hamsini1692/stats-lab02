@@ -99,6 +99,8 @@ While experts may provide broad guidelines, data-based approaches are needed to 
 
 This study estimates the economic value for remodeling a home empirically, utilizing observations of house sales in Ames, Iowa. The data shows the timing of the last remodel before a house is sold, but does not distinguish between different types of remodels. Applying a set of regression models, I estimate the value that results immediately when a house is remodeled, and also the rate at which it decays over time.
 
+The movie industry is a multi-billion dollar business, and the budget of a film has become a crucial factor in determining its success, particularly in terms of revenue. Movie production firms, who have control over the budget, are highly motivated to enhance their movie revenue. This study aims to explore the relationship between movie budget (X concept) and revenue (Y concept) using a comprehensive dataset containing metadata for over 700,000 movies listed in the TMDB Dataset. The dataset provides a unique opportunity to analyze the impact of budget on movie revenue, with both the X and Y concepts operationalized in terms of dollar amounts. However, there may be other omitted variables, such as the movie's storyline and competition from other movies, that could also impact revenue. The results of this study will have important implications for movie production firms, who can use the findings to make informed decisions about their investments in movie budgets. Future research could focus on generating new datasets to estimate the value of specific types of movies, such as different genres or production companies. Overall, the goal of this line of research is to provide accurate tools for movie production firms to make informed decisions about their investments and reduce uncertainty in the movie industry.
+
 ## Data and Methodology
 
 We gathered the dataset from Kaggle. The dataset comprises metadata for more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns. It is relevant and provides an opportunity to analyze the relationship between the budget and the revenue of the movies. The dataset contains unique information on films, with each movie being distinct from the others and identified by an id column in the dataset. Additionally, the distribution of the X and Y concept is identical, satisfying the assumptions of IID. Because each movie is not subject to multiple samplings, the dataset is regarded as cross-sectional.Each row in the data represents a movie. I performed all exploration and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow_cleaned` rows, was used to generate the statistics in this report.
@@ -141,12 +143,49 @@ I considered specifications that also include the modeling indicator $R$ by itse
 
 ## Results
 
-```{r fit models, include=FALSE, warning=FALSE, echo=FALSE}
+```{r fit models}
 # removed production_companies, total_cast
 movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
 movie_sample_statistical$log_vote_count <-log(movie_sample_statistical$vote_count)
 movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
 movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
+
+```
+
+```{r}
+library(lubridate)
+
+#movie_sample_statistical_test <- movie_sample_statistical
+
+movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
+
+# weekend - 1
+# weekday - 0
+
+View(movie_sample_statistical)
+
+```
+
+```{r}
+table(movie_sample_statistical$release_date_cat)
+
+library("writexl")
+#write_xlsx(movie_sample_statistical,"C:\\Users\\sivak\\Downloads\\movies\\movies_release_cat.xlsx")
+
+ggplot(movie_sample_statistical, 
+       aes(x=budget/1000000, y=revenue/1000000, color=release_date_cat)) +
+  geom_point() +
+  geom_smooth(se=FALSE) +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue Scatter Plot") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+```{r}
+
 
 movie_sample_statistical$log_run_time <-log(movie_sample_statistical$runtime)
 
@@ -164,7 +203,10 @@ model_3 <- lm(log_revenue ~ log_budget + vote_count+  log_title_length + runtime
 summary(model_3)
 
 model_4 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity , data = movie_sample_statistical)
-summary(model_4)
+
+model_5 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity + release_date_cat, data = movie_sample_statistical)
+
+summary(model_5)
 ```
 
 ```{r display regression table, message=FALSE, echo=FALSE, results='asis'}

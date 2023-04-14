@@ -60,7 +60,7 @@ data_cleaning <- function() {
 
   #remove na values from the covariates
   
-  movie_cleaned_df <- na.omit(movie_cleaned_df[c("runtime", "vote_count", "budget", "revenue", "popularity", "title_length")])
+  movie_cleaned_df <- na.omit(movie_cleaned_df[c("runtime", "vote_count", "budget", "revenue", "popularity", "title_length", "release_date")])
 
   #Return the preprocessed data frame
   return(movie_cleaned_df)

@@ -90,6 +90,7 @@ movie_sample_exploration <- movie_filtered_df %>%
   sample_frac(0.3, replace = FALSE)
 rows_statistical <- nrow(movie_sample_exploration)
 rows_exploratrion
+rows_statistical
 ```
 
 ## Introduction 
@@ -105,7 +106,7 @@ We gathered the dataset from Kaggle. The dataset comprises metadata for more tha
 
 To determine the factors that affect movie revenue, we need to extensively analyze data and conduct research .To analyze the factors that affect movie revenue, we have defined inclusion criteria that could potentially impact the dependent variable "revenue" (Y), and selected "budget" as the independent variable. We are focusing on movies that have been officially released to the public, and to refine our analysis, we are excluding movies with budgets or revenues exceeding $999 and budget values of $5 billion and $800 million. After filtering the data, we are left with a sample size of r filtered_rows observations.
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 3, fig.width = 3}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 4, fig.width = 3}
 selected_columns <- movie_sample_exploration %>%
   dplyr::select(budget, revenue, runtime, vote_count, title_length, popularity)
 cor_matrix <- rcorr(as.matrix(selected_columns), type = "pearson")$r
@@ -162,25 +163,16 @@ To consolidate the categories and obtain actionable insights, I categorized the 
 
 ```{r fit models, echo=FALSE, message=FALSE, warning=FALSE}
 # removed production_companies, total_cast
-movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
-movie_sample_statistical$log_vote_count <-log(movie_sample_statistical$vote_count)
-movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
-movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
-
+movie_sample_exploration$log_budget <-log(movie_sample_exploration$budget/1000000)
+movie_sample_exploration$log_vote_count <-log(movie_sample_exploration$vote_count)
+movie_sample_exploration$log_title_length <- log(movie_sample_exploration$title_length)
+movie_sample_exploration$log_revenue <-log(movie_sample_exploration$revenue/1000000)
 ```
 
 ```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
 library(lubridate)
-#movie_sample_statistical_test <- movie_sample_statistical
-#movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
-movie_sample_statistical$lang_cat <- ifelse(movie_sample_statistical$original_language %in% c("en"), "1", "0")
-movie_sample_statistical$release_date_cat <- ifelse(month(movie_sample_statistical$release_date) %in% c(1,12), "1", "0")
-#movie_sample_statistical$release_date_cat <- ifelse(wday(movie_sample_statistical$release_date) %in% c(1, 6, 7), "1", "0")
-#ifelse(yday(movie_sample_statistical$release_date) %in% c(1, 327, 365), "1", "0")
-# weekend - 1
-# weekday - 0
-#View(movie_sample_statistical)
-
+movie_sample_exploration$lang_cat <- ifelse(movie_sample_exploration$original_language %in% c("en"), "1", "0")
+movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_exploration$release_date) %in% c(1,12), "1", "0")
 ```
 
 
@@ -189,35 +181,57 @@ movie_sample_statistical$release_date_cat <- ifelse(month(movie_sample_statistic
 #table(movie_sample_statistical$release_date_cat)
 #library("writexl")
 #write_xlsx(movie_sample_statistical,"C:\\Users\\sivak\\Downloads\\movies\\movies_release_cat.xlsx")
-plot_release_cat <- ggplot(movie_sample_statistical, 
-       aes(x=budget/1000000, y=revenue/1000000, color=release_date_cat)) +
-  geom_point() +
+plot_release_cat <- ggplot(movie_sample_exploration, 
+       aes(x=budget/1000000, y=revenue/1000000)) +
+  geom_point(aes(color=release_date_cat)) +
+  #geom_point() +
   geom_smooth(se=FALSE) +
   xlab("Budget") +
   ylab("Revenue") +
   ggtitle("Budget vs Revenue") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
-plot_lang_cat <- ggplot(movie_sample_statistical, 
-       aes(x=budget/1000000, y=revenue/1000000, color=lang_cat)) +
-  geom_point() +
+
+plot_lang_cat <- ggplot(movie_sample_exploration, 
+       aes(x=budget/1000000, y=revenue/1000000)) +
+  geom_point(aes(color=lang_cat)) +
+  #geom_point() +
   geom_smooth(se=FALSE) +
   xlab("Budget") +
   ylab("Revenue") +
+  xlim(0,200) + 
   ggtitle("Budget vs Revenue") +
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma)
 (plot_release_cat | plot_lang_cat)
 ```
 
-```{r heat map, fig.align='center', fig.height=3, fig.width=5}
-
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+model <- lm(log_revenue ~ log_budget, data = movie_sample_exploration)
+#model_11 <- lm(log_revenue ~ log_budget + lang_cat, data = movie_sample_statistical)
+#summary(model_11)
+#model_12 <- lm(log_revenue ~ log_budget + lang_cat + runtime + vote_count, data = movie_sample_statistical)
+#model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical)
+#summary(model_1)
+model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sample_exploration)
+#model_3 <- lm(log_revenue ~ log_budget + vote_count+  runtime + popularity, data = movie_sample_statistical)
+#model_4 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length, data = movie_sample_statistical)
+model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_exploration)
+#model_tst <- lm(log_revenue ~ log_budget + vote_count + release_date_cat, data = movie_sample_statistical)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
+movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
+movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
+
+
+movie_sample_statistical$lang_cat <- ifelse(movie_sample_statistical$original_language %in% c("en"), "1", "0")
+movie_sample_statistical$release_date_cat <- ifelse(month(movie_sample_statistical$release_date) %in% c(1,12), "1", "0")
 
 model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical)
-#summary(model)
 #model_11 <- lm(log_revenue ~ log_budget + lang_cat, data = movie_sample_statistical)
 #summary(model_11)
 #model_12 <- lm(log_revenue ~ log_budget + lang_cat + runtime + vote_count, data = movie_sample_statistical)
@@ -226,29 +240,40 @@ model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical)
 #model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical)
 #summary(model_1)
 model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sample_statistical)
-#summary(model_2)
 #model_3 <- lm(log_revenue ~ log_budget + vote_count+  runtime + popularity, data = movie_sample_statistical)
 #summary(model_3)
 #model_4 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length, data = movie_sample_statistical)
 model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
-#summary(model_5)
-#model_tst <- lm(log_revenue ~ log_budget + vote_count + release_date_cat, data = movie_sample_statistical)
-#summary(model_5)
+
+summary(model_5)
+model_6 <- lm(log_revenue ~ log_budget + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
+
+model_7 <- lm(log_revenue ~ log_budget + vote_count +popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
+
+model_8 <- lm(log_revenue ~ log_budget + vote_count + runtime + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
+
+model_9 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + release_date_cat + lang_cat, data = movie_sample_statistical)
+
+model_10 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + release_date_cat + lang_cat, data = movie_sample_statistical)
+
+waldtest(model_7, model_5, vcov = vcovHC(model_5, type = "HC1"))
+waldtest(model_8, model_5, vcov = vcovHC(model_5, type = "HC1"))
+waldtest(model_9, model_5, vcov = vcovHC(model_5, type = "HC1"))
+
 ```
+```{r normally distributed errors}
+```
+
 Table 1 shows the results of three regression models. The co-efficient of the X-concept variable "Budget" is having high statistical significane in all the three models studied. Its point estimates ranges from 0.78 to 0.91. 
 
-```{r display regression table, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
+```{r display, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
 get_robust_se <- function(model) {
   se <- sqrt(diag(vcovHC(model, type = "HC1")))
   return(se)
 }
 rse_model <- get_robust_se(model)
-#rse_model_1 <- get_robust_se(model_1)
 rse_model_2 <- get_robust_se(model_2)
-#rse_model_3 <- get_robust_se(model_3)
-#rse_model_4 <- get_robust_se(model_4)
 rse_model_5 <- get_robust_se(model_5)
-#Stargazer table along with robust standard error
 #Stargazer table along with robust standard error
 stargazer(model, model_2, model_5,
           type = "latex",

@@ -129,6 +129,7 @@ ggdraw() +
   draw_plot(main_plot)
 
 ```
+
 ```{r fit models, echo=FALSE, message=FALSE, warning=FALSE}
 # removed production_companies, total_cast
 movie_sample_exploration$log_budget <-log(movie_sample_exploration$budget/1000000)
@@ -170,13 +171,10 @@ Additionally, we evaluated homoscedasticity to check if the variance of the erro
 
 After the exploratory analysis, three models are built for the 70% dataset and regression analysis are carried out to find the influence of budget over the revenue of a movie. Table 1 shows the results of three regression models. 
 
-From the table, the co-efficient of the X-concept variable "Budget" is having high statistical significance in all the three models studied. Its point estimates ranging from 0.9 to 0.7. 
+From the table, the co-efficient of the X-concept variable "Budget" is having high statistical significance in all the three models studied. Point estimates range from 0.91 to 0.77. This also shows that effect of budget is absorbed by other co-variates. When we say, "absorbed" we mean that there is positive co-variance between the other co-variates in influencing the revenue. From Model 3  we observed that on an average, the model predicts that for every one million dollar increase in the movie budget, the revenue of the movie is expected to increase by approximately \$774,800 keeping all the other co-variates constant with an uncertainity of \$9574. On an average the model also predicts that for every vote the movie gets, the revenue of the movie is expected to increase by  \$207.1 (which is a very small effect), keeping all the co-variates constant. Additionally, the model also shows  that for every one minute increase in the runtime of the movie, the revenue of the movie is expected to increase by approximately \$7,411 keeping all the other co-variates constant. Similarly, the model also shows  that for every  movie which is released in English language, the revenue of the movie is expected to increase by approximately \$161,709 keeping all the other co-variates constant. Likewise, on average, the model predicts that for every one unit increase in the popularity of the movie, the revenue of the movie is expected to increase by approximately \$938.
 
-his means that, on average, the model predicts that for every one million dollar increase in the movie budget, the revenue of the movie is expected to increase by approximately $774,800.
 
-This also shows that effect of budget is absorbed by other co-variates. When we say, "absorbed" we mean that there is positive co-variance between the other co-variates in influencing the revenue.
-
-A stepwise selection method was used to select variables for the model, with a significance level of p < .05 for inclusion. We have also conducted coeftest to understand the significance of all the co-variates considered in the model. The results shows that the co-variates vote count, runtime and release season show more significance when compared to other co-variates. We have also conducted Wald test to find out the significance of single co-variate in the regression model. The results shows that the variables vote count, run time, popularity and release season shows more significance when compared to Movie Title Length and Release Language. This is also evident from the Table 1.
+We have also conducted coeftest to understand the significance of each and every co-variate in the model. We observed from the coeftest that the p-values of every covariates are less than 0.05. The results shows that the co-variates vote count, runtime and release season show more statistical significance when compared to other co-variates. We  also conducted Wald test to find out the statistical significance of all the coefficients in the model simultaneously. The results shows that the variables vote count, run time, popularity and release season shows more significance when compared to Movie Title Length and Release Language. This is also evident from the Table 1.
 From the table 1, we can see that Model 3 has the highest R-squared value, indicating that it is the best fitting model of the three.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
@@ -190,6 +188,7 @@ model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sam
 #model_3 <- lm(log_revenue ~ log_budget + vote_count+  runtime + popularity, data = movie_sample_statistical)
 #model_4 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length, data = movie_sample_statistical)
 model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_exploration)
+summary(model_5)
 #model_tst <- lm(log_revenue ~ log_budget + vote_count + release_date_cat, data = movie_sample_statistical)
 ```
 
@@ -223,9 +222,7 @@ summary(model_5)
 coeftest(model, vcov = vcovHC(model))
 coeftest(model_2, vcov = vcovHC(model_2))
 coeftest(model_5, vcov = vcovHC(model_5))
-
 ```
-
 
 
 ```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
@@ -245,6 +242,12 @@ waldtest(model_9, model_5, vcov = vcovHC(model_5, type = "HC1"))
 
 ```
 
+
+```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+coeftest(model_7, vcov = vcovHC(model))
+coeftest(model_8, vcov = vcovHC(model_2))
+coeftest(model_9, vcov = vcovHC(model_5))
+```
 
 
 ```{r display, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
@@ -273,11 +276,18 @@ stargazer(model, model_2, model_5,
 ```
 ## Limitations
 
-After closely observing the movies dataset we can assume that the data is not strictly I.I.D. as two movies can be having the same cast & crew or same production company and exactly same release dates. Also by the scatterplot we can observe a strong co-relation between revenue vs budget and revenue vs runtime, thus we can say that columns in the movie dataset are not independent of each other.
-The Dataset has a chance of introducing Sampling Bias as the data about the movies is self reported on TMDB which is a user-generated content platform. Thus, the dataset may represent some movies but not be representative of all movies that have been produced globally. The data may also be biased towards movies that are more popular then the other.
-The dataset does not mention any data about Motion Picture Association of America(MPAA) Ratings hence dataset does not gives us any information about the anticipated age groups of the viewers. The dataset has lot of NA or zero values for key columns such as revenue, budget and vote_count, after the data cleaning process the size of actual dataset has reduced considerably.
-The dataset represents some extreme outliers such as $0 value for budget, revenue and runtime of more then 1000 minutes (16.66 hr), these outliers can influence the overall statistical analysis of the dataset.
-The dataset may not represent true picture of current movie industry/trends since it contains information of movies which has a release date before 2013, movie industry is a fast paced world and the trends get outdated very soon moresoever their is no consideration of inflation when concluding the statistical analysis between covariates such as budget & revenue.
+The Dataset has a chance of introducing Sampling Bias as the data about the movies is self reported on TMDB which is a user-generated content platform. Thus, the dataset may represent some movies but dataset cannot be a representative of all movies that have been produced globally. The data may also be biased towards movies that are more popular then the other.
+
+After closely observing the movies dataset we can assume that the I.I.D. is questionable as two movies can be having the same cast & crew or same production company and exactly same release dates.
+
+The dataset does not mention any information about Motion Picture Association of America(MPAA) Ratings, which have the possibility of influencing the revenue. Likewise,casting actors may influence both budget & revenue of the movie. These variables introduce omitted variable bias in our model.
+
+The dataset represents some extreme outliers like runtime of more then 1000 minutes (16.66 hr), these outliers can influence the overall statistical analysis of the dataset.
+
+The dataset may not represent true picture of current movie industry/trends since it contains information of movies which has a release date before 2013. As the movie industry is rapidly changing, trends become outdated quickly. Moreover, their is no consideration of inflation when concluding the statistical analysis between covariates such as budget & revenue.
+
+For running an improved regression I would like to consider MPAA ratings, cast/crew information choosing these data points in our dataset can give us the latest trends in the movie industry.
+
 
 ## Conclusion
 

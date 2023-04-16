@@ -11,6 +11,7 @@ include-before:
 header-includes:
   - \usepackage{titling}
   - \setlength{\droptitle}{-1.1in}
+  - \usepackage{float}
 
 urlcolor: blue
 ---
@@ -93,18 +94,24 @@ rows_exploratrion
 rows_statistical
 ```
 
-## Introduction 
+# Introduction 
 The movie industry is a multi-billion dollar business, and the budget of a film has become a crucial factor in determining its success, particularly in terms of revenue. Movie production firms, who have control over the budget, are highly motivated to enhance their movie revenue. The global movies and entertainment market size was valued at USD 90.92 billion in revenue in 2021 and is expected to expand at a compound annual growth rate (CAGR) of 7.2% from 2022 to 2030 reaching USD 169.68 billion by 2030 [1].
 
 While there have been several research going on with revenue prediction of movies, over the years, there have been instances where movies with large budgets and compelling plotlines failed to perform at the box office, such as The Green Lantern ($220 million), while movies with relatively lower budgets succeeded, such as The Blair Witch Project [2]. It raises questions about what factors influence a movie's success.
 
 Our research aims to gain insights into the factors that affect movie revenue and provide recommendations for filmmakers to optimize their marketing and production strategies using a comprehensive dataset. One of the drawbacks in existing research in predicting movie revenue is the difficulty in accurately capturing the impact of other complex factors that influence a movie's success apart from budget. In this study, by applying a set of regression models, we estimate the revenue of a movie based on budget along with several other factors.
 
-## Data and Methodology
+# Data and Methodology
 
 We gathered the dataset from Kaggle. The dataset comprises metadata of more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns representing various factors influencing the movie's success. It is relevant and provides an opportunity to analyze the relationship between the budget and the revenue of the movies. The dataset contains unique information on films, with each movie being distinct from the others and identified by an id column in the dataset. Additionally, the distribution of the X and Y concept is close to identical, meeting the assumptions of IID. Because each movie is not subject to multiple samplings, the dataset is regarded as cross-sectional. Each row in the data represents a movie. We performed exploratory studies and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow_cleaned` rows, is used for testing the model and evaluation the results in this report.
 
 We performed data cleaning by ignoring the rows with missing values in any of the dependent and independent variables. To determine the factors that affects the movie revenue, we performed exploratory data analysis. From the plots, we observed few outliers with respect to budget and we are considering the movies with budget greater than \$999 and excluding movies with budget greater than \$799 million. After filtering the data, we are left with a sample size of `r filtered_rows` observations. 
+
+To best fit the relationship observed in exploratory plots, we operationalize the variables Budget(X) and Revenue(Y) in terms of amount (in dollars, $). Figure 1 shows plot of revenue as a function of budget, depicting a linear relationship between the two variables. Figure 2 shows the person correlation between dependent and all independent variables, from which we observe co-variate having huger correlation with the dependent variable.
+
+From Figure 2, based on the correlation score, We chose the following covariates that has an impact on the dependent variable. By including these covariates in our analysis, we can better understand the key factors driving movie revenue.  
+- vote_count: An indicator of the level of engagement a movie has received from the public.  
+- runtime: An important aspect of the movie-watching experience that has a correlation with revenue.  
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 3, fig.width = 3}
@@ -143,12 +150,7 @@ movie_sample_exploration$lang_cat <- ifelse(movie_sample_exploration$original_la
 movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_exploration$release_date) %in% c(1,12), "1", "0")
 ```
 
-To best fit the relationship observed in exploratory plots, we operationalize the variables Budget(X) and Revenue(Y) in terms of amount (in dollars, $). Figure 1 shows plot of revenue as a function of budget, depicting a linear relationship between the two variables. Figure 2 shows the person correlation between dependent and all independent variables, from which we observe co-variate having huger correlation with the dependent variable.
 
-From Figure 2, based on the correlation score, We chose the following covariates that has an impact on the dependent variable. By including these covariates in our analysis, we can better understand the key factors driving movie revenue.
-
-- vote_count: An indicator of the level of engagement a movie has received from the public.
-- runtime: An important aspect of the movie-watching experience that has a correlation with revenue.
 - popularity: A comprehensive metric that takes into account various factors such as promotions, and social media mentions.
 - title_length: A factor that can impact audience interest and expectations, with shorter titles being easier to remember and share. This variable is derived from the 'title' column in the dataset.
 - release_season: The release season of a movie can impact its revenue. For example, movies getting released during Christmas and New Year tend to have higher revenue. Many film studios release their biggest and most anticipated movies during this time to take advantage of the increased audience turnout and box office revenue potential. Here we considered two prominent holiday months (December & January) as one category and rest of the months as a different category.
@@ -167,17 +169,13 @@ where $\beta_0$ is the constant in the model, $\beta_1$ represents the budget co
 Additionally, we evaluated homoscedasticity to check if the variance of the errors or residuals in the model is constant across all the predictor variables, but the results showed heteroscedastic behaviour. Since our dataset is large, we will continue to build our model for the 70% dataset and to handle the heteroscedastic behaviour, we will use robust standard errors.
 
 
-## Results
+# Results
 
-After the exploratory analysis, three models are built for the 70% dataset and regression analysis are carried out to find the influence of budget over the revenue of a movie. Table 1 shows the results of three regression models. 
-
-From the table, the co-efficient of the X-concept variable "Budget" is having high statistical significance in all the three models studied. Point estimates range from 0.91 to 0.77. This also shows that effect of budget is absorbed by other co-variates. When we say, "absorbed" we mean that there is positive co-variance between the other co-variates in influencing the revenue. From Model 3  we observed that on an average, the model predicts that for every one million dollar increase in the movie budget, the revenue of the movie is expected to increase by approximately \$774,800 keeping all the other co-variates constant with an uncertainity of \$9574. On an average the model also predicts that for every vote the movie gets, the revenue of the movie is expected to increase by  \$207.1 (which is a very small effect), keeping all the co-variates constant. Additionally, the model also shows  that for every one minute increase in the runtime of the movie, the revenue of the movie is expected to increase by approximately \$7,411 keeping all the other co-variates constant. Similarly, the model also shows  that for every  movie which is released in English language, the revenue of the movie is expected to increase by approximately \$161,709 keeping all the other co-variates constant. Likewise, on average, the model predicts that for every one unit increase in the popularity of the movie, the revenue of the movie is expected to increase by approximately \$938.
+After the exploratory analysis, three models are built for the 70% dataset and regression analysis are carried out to find the influence of budget over the revenue of a movie. Table 1 shows the results of three regression models. We can also observe from the Table 1 that Model 3 has the highest adjusted R-squared value, indicating that it is the best fitting model of the three.
 
 
-We have also conducted coeftest to understand the significance of each and every co-variate in the model. We observed from the coeftest that the p-values of every covariates are less than 0.05. The results shows that the co-variates vote count, runtime and release season show more statistical significance when compared to other co-variates. We  also conducted Wald test to find out the statistical significance of all the coefficients in the model simultaneously. The results shows that the variables vote count, run time, popularity and release season shows more significance when compared to Movie Title Length and Release Language. This is also evident from the Table 1.
-From the table 1, we can see that Model 3 has the highest R-squared value, indicating that it is the best fitting model of the three.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', include=FALSE}
 model <- lm(log_revenue ~ log_budget, data = movie_sample_exploration)
 #model_11 <- lm(log_revenue ~ log_budget + lang_cat, data = movie_sample_statistical)
 #summary(model_11)
@@ -188,13 +186,12 @@ model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sam
 #model_3 <- lm(log_revenue ~ log_budget + vote_count+  runtime + popularity, data = movie_sample_statistical)
 #model_4 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length, data = movie_sample_statistical)
 model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_exploration)
-summary(model_5)
 #model_tst <- lm(log_revenue ~ log_budget + vote_count + release_date_cat, data = movie_sample_statistical)
 ```
 
 
 
-```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, include=FALSE, echo=FALSE}
 movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
 movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
 movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
@@ -216,16 +213,17 @@ model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sam
 model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
 
 summary(model_5)
+summary(model_5)$coefficients
 ```
 
-```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, include=FALSE, echo=FALSE}
 coeftest(model, vcov = vcovHC(model))
 coeftest(model_2, vcov = vcovHC(model_2))
 coeftest(model_5, vcov = vcovHC(model_5))
 ```
 
 
-```{r, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, include=FALSE, echo=FALSE}
 model_6 <- lm(log_revenue ~ log_budget + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
 
 model_7 <- lm(log_revenue ~ log_budget + vote_count +popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
@@ -236,9 +234,16 @@ model_9 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + rel
 
 model_10 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + release_date_cat + lang_cat, data = movie_sample_statistical)
 
-waldtest(model_7, model_5, vcov = vcovHC(model_5, type = "HC1"))
-waldtest(model_8, model_5, vcov = vcovHC(model_5, type = "HC1"))
-waldtest(model_9, model_5, vcov = vcovHC(model_5, type = "HC1"))
+model_11 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + log_title_length + release_date_cat, data = movie_sample_statistical)
+
+model_12 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + log_title_length + lang_cat, data = movie_sample_statistical)
+
+#waldtest(model_7, model_5, vcov = vcovHC(model_5, type = "HC1"))
+#waldtest(model_8, model_5, vcov = vcovHC(model_5, type = "HC1"))
+#waldtest(model_9, model_5, vcov = vcovHC(model_5, type = "HC1"))
+
+waldtest(model_11, model_5, vcov = vcovHC(model_5, type = "HC1"))
+waldtest(model_12, model_5, vcov = vcovHC(model_5, type = "HC1"))
 
 ```
 
@@ -261,6 +266,7 @@ rse_model_5 <- get_robust_se(model_5)
 #Stargazer table along with robust standard error
 stargazer(model, model_2, model_5,
           type = "latex",
+          table.placement = "H",
           omit.stat = "f",
           se=list(rse_model, rse_model_2, rse_model_5),
           title = "Estimated Regressions",
@@ -271,10 +277,21 @@ stargazer(model, model_2, model_5,
           digits=3,
           star.cutoffs = c(0.05, 0.01, 0.001),
           notes.append = FALSE,
-          notes = "\\parbox[t]{7cm}{*p<0.1; **p<0.05; ***p<0.01. $HC_1$ robust standard errors specified in parentheses. Holiday season is Dec/Jan and rest of the months are considered as non-holiday season. Language Category is either English or Non-English movies.}"
+          notes = "\\parbox[t]{10cm}{*p<0.1; **p<0.05; ***p<0.01. $HC_1$ robust standard errors specified in parentheses. Release season is Dec/Jan and rest of the months are considered as non-holiday season. Release Language Category is either English or Non-English movies.}"
           )
 ```
-## Limitations
+
+Also, the co-efficient of the X-concept variable "Budget" is having high statistical significance in all the three models studied. Point estimates range from 0.91 to 0.77. This also shows that effect of budget is absorbed by other co-variates. The term "absorbed" refers to the positive relationship between the other co-variates and their impact on the revenue. It is also evident that all the co-variates are having p-value less than 0.05 and are statistically significant. The co-variates vote count, runtime and release season show more statistical significance when compared to other co-variates
+
+We conducted Wald test to the statistical significance of the two categorical co-variates (Release Season and Release Language), the results re-confirmed that they are also  statistically significant variables in the model.
+
+To better understand the results, consider a 180 minutes movie being produced with one million dollar budget in English language with a shorter title length of 10 and planning to release during early December, the Model 3 shows the revenue of the movie could increase to \$????
+
+From Model 3,  we observed that on an average, the model predicts that for every one million dollar increase in the movie budget, the revenue of the movie is expected to increase by approximately \$774,800 keeping all the other co-variates constant with an uncertainity of \$9574. On an average the model also predicts that for every vote the movie gets, the revenue of the movie is expected to increase by  \$207.1 (which is a very small effect), keeping all the co-variates constant. Additionally, the model also shows  that for every one minute increase in the runtime of the movie, the revenue of the movie is expected to increase by approximately \$7,411 keeping all the other co-variates constant. Similarly, the model also shows  that for every  movie which is released in English language, the revenue of the movie is expected to increase by approximately \$161,709 keeping all the other co-variates constant. Likewise, on average, the model predicts that for every one unit increase in the popularity of the movie, the revenue of the movie is expected to increase by approximately \$938.
+
+The results emphasizes that budget is a crucial factor in determining the revenue of a movie along with other co-variates vote count, runtime and release season.
+
+# Limitations
 
 The Dataset has a chance of introducing Sampling Bias as the data about the movies is self reported on TMDB which is a user-generated content platform. Thus, the dataset may represent some movies but dataset cannot be a representative of all movies that have been produced globally. The data may also be biased towards movies that are more popular then the other.
 
@@ -289,12 +306,12 @@ The dataset may not represent true picture of current movie industry/trends sinc
 For running an improved regression I would like to consider MPAA ratings, cast/crew information choosing these data points in our dataset can give us the latest trends in the movie industry.
 
 
-## Conclusion
+# Conclusion
 
 This study estimated the economic value of movie production, specifically examining the relationship between movie budget and revenue.We also found that several covariates, such as vote_count, runtime, popularity, title_length, release_date_cat, and language_cat, have a significant impact on movie revenue. Additionally, we identified the holiday season and language as important categorical factors that can impact the success of a movie. Our hope is that this line of work will provide filmmakers with accurate tools to plan their investments and optimize their production strategies, reducing uncertainty in the film industry. Future research could examine the value of specific production decisions, such as marketing strategies or casting choices.
 
-## Appendix
-```{r, message=FALSE, warning=FALSE, fig.width=10, fig.height=5}
+
+```{r, message=FALSE, warning=FALSE, fig.width=10, fig.height=5, include=FALSE, echo=FALSE}
 #table(movie_sample_statistical$release_date_cat)
 #library("writexl")
 #write_xlsx(movie_sample_statistical,"C:\\Users\\sivak\\Downloads\\movies\\movies_release_cat.xlsx")

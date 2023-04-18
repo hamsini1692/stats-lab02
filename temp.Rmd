@@ -97,7 +97,6 @@ movie_sample_statistical %>%
 
 
 ```{r fit models, include=FALSE, warning=FALSE, echo=FALSE}
-# removed production_companies, total_cast
 movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
 movie_sample_statistical$log_vote_count <-log(movie_sample_statistical$vote_count)
 movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
@@ -122,6 +121,29 @@ model_4 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime
 summary(model_4)
 ```
 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', include=FALSE}
+library(lubridate)
+movie_sample_exploration$lang_cat <- ifelse(movie_sample_exploration$original_language %in% c("en"), "1", "0")
+movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_exploration$release_date) %in% c(1,12), "1", "0")
+
+# removed production_companies, total_cast
+movie_sample_exploration$log_budget <-log(movie_sample_exploration$budget/1000000)
+movie_sample_exploration$log_title_length <- log(movie_sample_exploration$title_length)
+movie_sample_exploration$log_revenue <-log(movie_sample_exploration$revenue/1000000)
+model <- lm(log_revenue ~ log_budget, data = movie_sample_exploration)
+
+model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sample_exploration)
+
+model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_exploration)
+```
+
+
+```{r homescedasticity}
+plot(model, which=3)
+plot(model_2, which=3)
+plot(model_5, which=3)
+```
 
 
 ```{r scatter plot, fig.align='center', fig.height=3, fig.width=5}
@@ -185,6 +207,9 @@ corrplot(cor_matrix, method = "color", type = "upper", order = "hclust",
 
 
 ```{r unique BLP, fig.align='center',fig.height=3,warning=FALSE,fig.show='hide',echo=FALSE}
+
+par(mfrow=c(1,2))
+
 #1. budget
 hist(movie_sample_exploration$budget/1000000, col = "blue", 
      main = "Distribution of budget",
@@ -196,7 +221,26 @@ hist(movie_sample_exploration$log_budget, col = "blue",
      main = "Distribution of log budget",
      xlab = "Budget", ylab = "Number of movies")
 
+
+#revenue
+hist(movie_sample_exploration$revenue/1000000, col = "pink", 
+     main = "Distribution of revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+#applying log transformation
+movie_sample_exploration$log_revenue <- log(movie_sample_exploration$revenue/1000000)
+hist(movie_sample_exploration$log_revenue, col = "pink", 
+     main = "Distribution of log revenue",
+     xlab = "revenue", ylab = "Number of movies")
+
+# Reset the plotting region to default
+par(mfrow=c(1,1))
+
+```
+
+
 #vote count. 
+```{r}
 hist(movie_sample_exploration$vote_count, col = "red", 
      main = "Distribution of vote count",
      xlab = "vote count", ylab = "Number of movies")
@@ -254,16 +298,7 @@ hist(movie_sample_exploration$log_run_time, col = "green",
  #    main = "Distribution of total cast",
 #     xlab = "log total cast", ylab = "Number of movies")
 
-#revenue
-hist(movie_sample_exploration$revenue/1000000, col = "pink", 
-     main = "Distribution of revenue",
-     xlab = "revenue", ylab = "Number of movies")
 
-#applying log transformation
-movie_sample_exploration$log_revenue <- log(movie_sample_exploration$revenue/1000000)
-hist(movie_sample_exploration$log_revenue, col = "pink", 
-     main = "Distribution of log revenue",
-     xlab = "revenue", ylab = "Number of movies")
 
 hist(movie_sample_exploration$runtime, col = "lightblue", 
      main = "Distribution of runtime",

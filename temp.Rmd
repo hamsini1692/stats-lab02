@@ -1,14 +1,125 @@
-```{r}
+```{r load packages and set options, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(tidyverse) 
+library(magrittr)
+library(knitr)
+library(patchwork)
+library(moments)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+library(readr)
+library(car)
+source("data_cleaning.R")
+library(ggplot2)
+theme_set(theme_bw())
+options(tinytex.verbose = TRUE)
+knitr::opts_chunk$set(echo=FALSE, message=FALSE)
+library(caret)
+library(stringr)
+```
 
-movie_sample_statistical_clean <- movie_sample_statistical_clean %>% 
+
+```{r load data, warning=FALSE, echo=FALSE, results='hide', message=FALSE}
+movie_data <- read_csv("./datasets/movies_data.csv")
+nrow_original <- nrow(movie_data)
+```
+
+
+```{r call the dataframe, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+
+# Call the function to preprocess the data
+movie_filtered_df <- data_cleaning()
+nrow_cleaned <- nrow(movie_filtered_df)
+nrow_cleaned
+filtered_rows <- nrow(movie_filtered_df)
+difference <- nrow_original - filtered_rows
+difference
+```
+
+
+```{r data exploration, echo=FALSE, message=FALSE, warning=FALSE}
+# randomly sample 30% of rows from movie_filtered_df
+set.seed(123) # set seed for reproducibility
+
+#Split data into 30% and 70% using caret's createDataPartition function
+index <- createDataPartition(movie_filtered_df$revenue, p = 0.3, list = FALSE)
+
+# Create the 30% sample for data exploration
+movie_sample_exploration <- movie_filtered_df[index,]
+
+# Create the 70% sample for statistical test
+movie_sample_statistical <- movie_filtered_df[-index,]
+
+movie_sample_exploration <- movie_filtered_df %>% 
+  sample_frac(0.3, replace = FALSE)
+rows_exploratrion <- nrow(movie_sample_exploration)
+
+# Create the 70% sample for statistical test
+movie_sample_statistical <- movie_filtered_df[-index,]
+movie_sample_exploration <- movie_filtered_df %>% 
+  sample_frac(0.3, replace = FALSE)
+rows_statistical <- nrow(movie_sample_exploration)
+```
+
+
+```{r figure_1, echo=FALSE, message=FALSE, fig.cap = "Revenue as a Function of Budget", fig.height = 3, fig.width = 5}
+ggplot(movie_sample_exploration, 
+       aes(x=budget/1000000, y=revenue/1000000)) +
+  geom_point(color='darkblue') +
+  geom_smooth(se=FALSE) +
+  xlab("Budget") +
+  ylab("Revenue") +
+  ggtitle("Budget vs Revenue Scatter Plot") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma)
+```
+
+
+```{r}
+movie_sample_statistical <- movie_sample_statistical %>% 
   mutate(
     model_preds = predict(model_3), 
     model_resid = resid(model_3)
   ) 
 #Check for correlations in all variables and figure out which one to drop 
-movie_sample_statistical_clean %>% 
+movie_sample_statistical %>% 
   select(budget,vote_count,title_length, runtime, model_resid) %>% 
   GGally::ggpairs()
+```
+
+
+```{r fit models, include=FALSE, warning=FALSE, echo=FALSE}
+# removed production_companies, total_cast
+movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
+movie_sample_statistical$log_vote_count <-log(movie_sample_statistical$vote_count)
+movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
+movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
+
+movie_sample_statistical$log_run_time <-log(movie_sample_statistical$runtime)
+
+
+model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical)
+summary(model)
+                                                     
+model_1 <- lm(log_revenue ~ log_budget + vote_count, data = movie_sample_statistical)
+summary(model_1)
+
+model_2 <- lm(log_revenue ~ log_budget + vote_count + log_title_length , data = movie_sample_statistical)
+summary(model_2)
+
+model_3 <- lm(log_revenue ~ log_budget + vote_count+  log_title_length + runtime, data = movie_sample_statistical)
+summary(model_3)
+
+model_4 <- lm(log_revenue ~ log_budget + vote_count + log_title_length + runtime + popularity , data = movie_sample_statistical)
+summary(model_4)
 ```
 
 

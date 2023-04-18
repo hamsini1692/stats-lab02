@@ -113,10 +113,10 @@ We performed exploratory studies and model building on a 30\% subsample of the d
 
 We cleaned data by ignoring the rows with missing values in all dependent and independent variables. From the exploratory plots, we observed few outliers for budget, and we are considering the movies with a budget greater than \$999 and excluding movies with a budget greater than \$799 million. After filtering the data, we are left with a sample size of `r filtered_rows` observations.  
 
-To best fit the relationship observed in exploratory plots, we operationalize the variables Budget(X) and Revenue(Y) in terms of amount (in dollars, $). Figure 2 shows a plot of Revenue as a function of budget, depicting a linear relationship between the two variables. Figure 1 shows the "pearson" correlation between the dependent and all independent variables. Based on the correlation score, we chose the following covariates that affect the dependent variable (Revenue). By including them in our analysis, we will better understand the fundamental factors that influence the movie revenue.
+To best fit the relationship observed in exploratory plots, we operationalize the variables Budget(X) and Revenue(Y) in terms of amount (in dollars, $). Figure 2 shows a plot of Revenue as a function of budget, depicting a linear relationship between the two variables. Figure 1 shows the "pearson" correlation between the dependent and all independent variables. Based on the correlation score, we chose the following covariates that affect the dependent variable (Revenue). The color shades are used to represent correlation, spanning from dark red to dark blue. In this scheme, dark shades of red (+1.0) indicate a strong positive correlation between variables, whereas dark shades of blue indicate a strong negative correlation (-1.0).. By including them in our analysis, we will better understand the fundamental factors that influence the movie revenue.
 
 - vote_count (count): An indicator of the level of public engagement a movie has received.
-- runtime (minutes): An essential aspect of the movie-watching experience that has a correlation with Revenue.
+- runtime (minutes): An essential aspect of the movie-watching experience that has a correlation with Revenue. It can impact the number of screenings and profitability.  
 
 ```{r fit models, echo=FALSE, message=FALSE, warning=FALSE}
 # removed production_companies, total_cast
@@ -126,9 +126,7 @@ movie_sample_exploration$log_revenue <-log(movie_sample_exploration$revenue/1000
 ```
 
 
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height = 3, fig.width = 3}
-library(ggcorrplot)
+```{r figure 1, echo=FALSE, message=FALSE, fig.cap = "Correlation Plot and Scatter Plot", fig.height = 3, fig.width = 3, warning=FALSE}
 
 selected_columns <- movie_sample_exploration %>%
   dplyr::select(budget, revenue, runtime, vote_count, title_length, popularity)
@@ -137,7 +135,7 @@ cor_matrix <- cor(selected_columns, method = "pearson")
 
 ggcorrplot(cor_matrix, type = "upper", colors = c("#6D9EC1", "white", "#E46726"), lab_size = 1, hc.order = TRUE) +
   ggtitle("Figure 1. Correlation Plot") +
-  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=18), legend.title = element_text(size=10))
+  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=18), legend.title = element_text(size=10),plot.margin = unit(c(1, 0, 3, 0), "lines"))
 
 main_plot <- ggplot(movie_sample_exploration, 
        aes(x=log_budget, y=log_revenue)) +
@@ -149,6 +147,7 @@ main_plot <- ggplot(movie_sample_exploration,
   scale_x_continuous(labels = scales::comma) +
   scale_y_continuous(labels = scales::comma) + 
   theme(plot.title = element_text(hjust = 0.5,size=10), axis.title = element_text(size=10), legend.title = element_text(size=10))
+
 
 ggdraw() +
   draw_plot(main_plot)
@@ -162,7 +161,6 @@ library(lubridate)
 movie_sample_exploration$lang_cat <- ifelse(movie_sample_exploration$original_language %in% c("en"), "1", "0")
 movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_exploration$release_date) %in% c(1,12), "1", "0")
 ```
-
 
 - popularity (score): A comprehensive metric that considers various factors such as promotions and social media mentions.
 - title_length (count): A factor that can impact audience interest, with shorter titles being easier to remember and share. This column is derived from the 'title' column in the dataset.
@@ -197,14 +195,17 @@ model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log
 
 
 
-```{r,  echo=FALSE, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, include=FALSE, echo=FALSE}
 movie_sample_statistical$log_budget <-log(movie_sample_statistical$budget/1000000)
 movie_sample_statistical$log_title_length <- log(movie_sample_statistical$title_length)
 movie_sample_statistical$log_revenue <-log(movie_sample_statistical$revenue/1000000)
 movie_sample_statistical$lang_cat <- ifelse(movie_sample_statistical$original_language %in% c("en"), "1", "0")
 movie_sample_statistical$release_date_cat <- ifelse(month(movie_sample_statistical$release_date) %in% c(1,12), "1", "0")
+
 model <- lm(log_revenue ~ log_budget, data = movie_sample_statistical)
+
 model_2 <- lm(log_revenue ~ log_budget + vote_count + runtime , data = movie_sample_statistical)
+
 model_5 <- lm(log_revenue ~ log_budget + vote_count + runtime + popularity + log_title_length + release_date_cat + lang_cat, data = movie_sample_statistical)
 ```
 
@@ -216,11 +217,17 @@ coeftest(model_5, vcov = vcovHC(model_5))
 
 
 ```{r, warning=FALSE, message=FALSE, include=FALSE, echo=FALSE}
+
 model_11 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + log_title_length + release_date_cat, data = movie_sample_statistical)
+
 model_12 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + log_title_length + lang_cat, data = movie_sample_statistical)
+
 waldtest(model_11, model_5, vcov = vcovHC(model_5, type = "HC3"))
 waldtest(model_12, model_5, vcov = vcovHC(model_5, type = "HC3"))
+
 ```
+
+
 
 
 ```{r display, message=FALSE, echo=FALSE, results='asis', warning=FALSE}
@@ -303,5 +310,4 @@ plot_lang_cat <- ggplot(movie_sample_exploration,
   scale_y_continuous(labels = scales::comma)
 (plot_release_cat | plot_lang_cat)
 ```
-
 

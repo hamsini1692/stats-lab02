@@ -24,9 +24,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
-
-
 ```{r load packages and set options, include=FALSE}
 library(tidyverse)
 library(magrittr)
@@ -169,8 +166,8 @@ movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_explorati
 
 - popularity (score): A comprehensive metric that considers various factors such as promotions and social media mentions.
 - title_length (count): A factor that can impact audience interest, with shorter titles being easier to remember and share. This column is derived from the 'title' column in the dataset.
-- release_season (binary): Many film studios release their most significant and most anticipated movies during Christmas and New Year to take advantage of the increased audience turnout and box office revenue potential. Here we considered two prominent holiday months (December & January) as one category and the rest as a different category.
-- release_language (binary): Movies released in widely spoken languages such as English have a higher potential audience and, therefore may generate higher Revenue. The model can capture this effect by including release language as a covariate and make more accurate revenue predictions. Here we took English as a primary category and all other languages as a non-English category.  
+- release_season (binary): Film studios release major movies during Christmas and New Year to benefit from increased audience turnout and box office revenue. Here we considered two prominent holiday months (December & January) as one category and the rest as a different category.
+- release_language (binary): Movies released in widely spoken languages such as English have a higher potential audience and, therefore may generate higher Revenue. Here we took English as a primary category and all other languages as a non-English category.  
 
 Before running the regression model, we checked the multi-collinearity between all predictors by running a variation inflation factor to reduce unstable and unreliable estimates of the regression analysis. We observed there is no evidence of multi-collinearity between the predictor variables. 
 
@@ -192,7 +189,7 @@ $$
 
 where $\beta_0$ is the constant in the model, $\beta_1$ represents the budget coefficient, $\mathbf{Z}$ is a row vector of additional covariates, and $\mathbf{\gamma}$ is a column vector of coefficients.
 
-Additionally, we evaluated homoscedasticity ["App. 6.2"]  to check if the variance of the errors or residuals in the model  is constant across all the predictor variables using scale-location plot and Breusch Pagan test ["App. 6.4], but the results showed heteroscedastic behavior. Since our dataset is large, we will continue to build our model with robust standard errors to handle the heteroscedastic behavior.
+Additionally, we evaluated homoscedasticity ["App. 6.2"]  to check if the variance of the errors or residuals in the model  is constant across all the predictor variables using scale-location plot and Breusch Pagan test ["App. 6.4"], but the results showed heteroscedastic behavior. Since our dataset is large, we will continue to build our model with robust standard errors to handle the heteroscedastic behavior.
 
 
 # Results
@@ -242,9 +239,9 @@ stargazer(model_1, model_2, model_3,
           notes = "\\parbox[t]{10cm}{*p<0.1; **p<0.05; ***p<0.01. Release season is Dec/Jan and rest of the months are considered as non-holiday season. Release Language Category is either English or Non-English movies.}"
           )
 ```
-We can also observe from Table 1 that model 3 has the highest adjusted R-squared value of 0.67, indicating that it is the best-fitting model out of the three. Additionally, the results of anova test [“App. 6.4”] of the three models also reflects the same as the residual sum of squares is low for model 3 as compared to other models.
+We can also observe from Table 1 that model 3 has the highest adjusted R-squared value of 0.67, indicating that it is the best-fitting model out of the three. Additionally, the results of anova test [“App. 6.4”] of the three models also reflects the same as it has significant F-statistic value along with lower residual sum of squares, low residual degrees of freedom and low p-value.
 
-The coefficient of the X-concept variable "Budget" is having higher statistical significance in all three models. Point estimates range from 0.91 to 0.77, showing that the variable budget has a positive relationship between the other covariates and the Revenue. It is also evident from the table that all the covariates are statistically significant, having a p-value less than 0.05 (alpha level). The co-variates vote count, runtime, and release season show more statistical significance than other covariates. We also conducted a "Wald" test [“App. 6.5”]  to study the statistical significance of the two categorical covariates (Release Season and Release Language), and the results reassured us that they are also statistically significant variables in the model.
+The "Budget" variable has a strong positive relationship with revenue in all three models, with estimates ranging from 0.91 to 0.77. All covariates, including vote count, runtime, and release season, are statistically significant with p-values less than 0.05 (alpha level). The covariates vote count, runtime, and release season show more statistical significance than other covariates. We also conducted a "Wald" test [“App. 6.5”]  to study the statistical significance of the two categorical covariates (Release Season and Release Language).
 
 To better understand the practical significance of the results, let’s consider a hypothetical use case with 180 minutes movie being produced with a million-dollar budget with a shorter title length of 10, the Model 3 shows that the Revenue of the movie could increase by 77.2%. Similarly, the model also shows that for every movie which is released in the English language, the revenue of the movie is expected to increase by approximately 15.6% keeping all the other covariates constant. Likewise, on average, the model predicts if a movie gets released during December/January, the revenue of the movie is expected to increase by 18.1%.
 
@@ -307,7 +304,7 @@ par(mfrow=c(1,1))
 
 
 
-```{r, message=FALSE, warning=FALSE, fig.width=5, fig.height=5, fig.cap="Revenue as a function of Budget with language category. "}
+```{r, message=FALSE, warning=FALSE, fig.width=4, fig.height=3, fig.align='center'}
 
 
 plot_lang_cat <- ggplot(movie_sample_exploration, 
@@ -318,8 +315,10 @@ plot_lang_cat <- ggplot(movie_sample_exploration,
   xlab("Budget") +
   ylab("Revenue") +
   xlim(0,200) + 
+  ggtitle("Revenue as a function of Budget with Language category") + 
   scale_x_continuous(labels = scales::comma) +
-  scale_y_continuous(labels = scales::comma)
+  scale_y_continuous(labels = scales::comma) + 
+  theme(plot.title = element_text(hjust = 0.5, size = 10), axis.title = element_text(size=18), legend.title = element_text(size=10),plot.margin = unit(c(1, 0, 3, 0), "lines"))
 plot_lang_cat
 ```
 

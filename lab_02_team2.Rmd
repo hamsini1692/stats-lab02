@@ -140,7 +140,7 @@ ggcorrplot(cor_matrix, type = "upper", colors = c("#6D9EC1", "white", "#E46726")
 main_plot <- ggplot(movie_sample_exploration, 
        aes(x=log_budget, y=log_revenue)) +
   geom_point(color='darkblue') +
-  geom_smooth(se=FALSE) +
+  geom_smooth(se=FALSE,color='red') +
   xlab("Budget") +
   ylab("Revenue") +
   ggtitle("Figure 2. Budget vs Revenue") +

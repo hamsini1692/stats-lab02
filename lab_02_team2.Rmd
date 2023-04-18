@@ -14,6 +14,7 @@ header-includes:
   - \usepackage{float}
   - \usepackage{titlesec}
   - \titlespacing{\title}{-1pt}{\parskip}{-\parskip}
+  
 
 urlcolor: blue
 ---
@@ -21,6 +22,10 @@ urlcolor: blue
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+
+
 
 ```{r load packages and set options, include=FALSE}
 library(tidyverse)
@@ -107,9 +112,9 @@ Our research aims to gain insights into the factors that affect movie revenue an
 
 # Data and Methodology
 
-We gathered the dataset from Kaggle. The dataset comprises metadata of more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns representing various factors influencing the movie's success. It is relevant and provides an opportunity to analyze the relationship between the budget and the Revenue of the movies. The dataset contains unique information on movies, with each movie being distinct from the others and identified by an id column in the dataset.  
+We gathered the dataset from [Kaggle](https://www.kaggle.com/datasets/akshaypawar7/millions-of-movies). The dataset comprises metadata of more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns representing various factors influencing the movie's success. It is relevant and provides an opportunity to analyze the relationship between the budget and the Revenue of the movies. The dataset contains unique information on movies, with each movie being distinct from the others and identified by an id column in the dataset.  
 
-We performed exploratory studies and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow_cleaned` rows, is used for testing the model and evaluating the results in this report. To meet the large sample assumptions, we are evaluating the assumptions of I.I.D and Unique BLP. From the exploratory data analysis, although the budget and revenue distribution was roughly identical, we observed that our dataset is not strictly I.I.D (further discussed in the Limitations section), and it does not have finite variance from the histogram plots, eventually violating the unique BLP assumption. We performed a log transformation of the predictor variables (budget and title length) to overcome this. Because each movie is not subjected to multiple samplings, the dataset is regarded as cross-sectional.  
+We performed exploratory studies and model building on a 30\% subsample of the data. The remaining 70\%, totaling `r nrow_cleaned` rows, is used for testing the model and evaluating the results in this report. To meet the large sample assumptions, we are evaluating the assumptions of I.I.D and Unique BLP. From the exploratory data analysis, although the budget and revenue distribution was roughly identical, we observed that our dataset is not strictly I.I.D (further discussed in the Limitations section), and it does not have finite variance from the histogram plots, eventually violating the unique BLP assumption. We performed a log transformation [“App. 6.1”] of the predictor variables (budget and title length) to overcome this. Because each movie is not subjected to multiple samplings, the dataset is regarded as cross-sectional.  
 
 We cleaned data by ignoring the rows with missing values in all dependent and independent variables. From the exploratory plots, we observed few outliers for budget, and we are considering the movies with a budget greater than \$999 and excluding movies with a budget greater than \$799 million. After filtering the data, we are left with a sample size of `r filtered_rows` observations.  
 
@@ -169,7 +174,7 @@ movie_sample_exploration$release_date_cat <- ifelse(month(movie_sample_explorati
 
 Before running the regression model, we checked the multi-collinearity between all predictors by running a variation inflation factor to reduce unstable and unreliable estimates of the regression analysis. We observed there is no evidence of multi-collinearity between the predictor variables. 
 
-We created three regression models on the 30% dataset to understand better to understand the factors contributing to the Revenue of a movie. The first model studied the correlation between budget and Revenue. In the second model, we gradually added covariates such as 'Vote Count' and 'Run time'. Finally, in the third model, we added more covariates such as Popularity, Movie Title Length, Release season, and Release Language.
+We created three regression models on the 30% dataset to understand better to understand the factors contributing to the Revenue of a movie. The first model studied the correlation between budget and Revenue. In the second model, we gradually added covariates such as 'Vote Count' and 'Run time'. Finally, in the third model, we added more covariates such as Popularity, Movie Title Length, Release season, and Release Language [“App. 6.2”].
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 model_exp_1 <- lm(log_revenue ~ log_budget, data = movie_sample_exploration)
@@ -187,7 +192,7 @@ $$
 
 where $\beta_0$ is the constant in the model, $\beta_1$ represents the budget coefficient, $\mathbf{Z}$ is a row vector of additional covariates, and $\mathbf{\gamma}$ is a column vector of coefficients.
 
-Additionally, we evaluated homoscedasticity to check if the variance of the errors or residuals in the model is constant across all the predictor variables, but the results showed heteroscedastic behavior. Since our dataset is large, we will continue to build our model with robust standard errors to handle the heteroscedastic behavior.
+Additionally, we evaluated homoscedasticity ["App. 6.2"]  to check if the variance of the errors or residuals in the model  is constant across all the predictor variables using scale-location plot and Breusch Pagan test ["App. 6.4], but the results showed heteroscedastic behavior. Since our dataset is large, we will continue to build our model with robust standard errors to handle the heteroscedastic behavior.
 
 
 # Results
@@ -237,9 +242,9 @@ stargazer(model_1, model_2, model_3,
           notes = "\\parbox[t]{10cm}{*p<0.1; **p<0.05; ***p<0.01. Release season is Dec/Jan and rest of the months are considered as non-holiday season. Release Language Category is either English or Non-English movies.}"
           )
 ```
-We can also observe from Table 1 that model 3 has the highest adjusted R-squared value of 0.67, indicating that it is the best-fitting model out of the three. Additionally, the results of anova test of the three models also reflects the same as the residual sum of squares is low for model 3 as compared to other models.
+We can also observe from Table 1 that model 3 has the highest adjusted R-squared value of 0.67, indicating that it is the best-fitting model out of the three. Additionally, the results of anova test [“App. 6.4”] of the three models also reflects the same as the residual sum of squares is low for model 3 as compared to other models.
 
-The coefficient of the X-concept variable "Budget" is having higher statistical significance in all three models. Point estimates range from 0.91 to 0.77, showing that the variable budget has a positive relationship between the other covariates and the Revenue. It is also evident from the table that all the covariates are statistically significant, having a p-value less than 0.05 (alpha level). The co-variates vote count, runtime, and release season show more statistical significance than other covariates. We also conducted a "Wald" test to study the statistical significance of the two categorical covariates (Release Season and Release Language), and the results reassured us that they are also statistically significant variables in the model.
+The coefficient of the X-concept variable "Budget" is having higher statistical significance in all three models. Point estimates range from 0.91 to 0.77, showing that the variable budget has a positive relationship between the other covariates and the Revenue. It is also evident from the table that all the covariates are statistically significant, having a p-value less than 0.05 (alpha level). The co-variates vote count, runtime, and release season show more statistical significance than other covariates. We also conducted a "Wald" test [“App. 6.5”]  to study the statistical significance of the two categorical covariates (Release Season and Release Language), and the results reassured us that they are also statistically significant variables in the model.
 
 To better understand the practical significance of the results, let’s consider a hypothetical use case with 180 minutes movie being produced with a million-dollar budget with a shorter title length of 10, the Model 3 shows that the Revenue of the movie could increase by 77.2%. Similarly, the model also shows that for every movie which is released in the English language, the revenue of the movie is expected to increase by approximately 15.6% keeping all the other covariates constant. Likewise, on average, the model predicts if a movie gets released during December/January, the revenue of the movie is expected to increase by 18.1%.
 
@@ -266,7 +271,7 @@ This study estimated the economic value of movie production, specifically examin
 
 # Appendix
 
-## Exploratory Analysis
+## Exploratory Analysis 
 
 ```{r unique BLP, fig.align='center',fig.height=3,warning=FALSE,echo=FALSE}
 
@@ -309,7 +314,7 @@ plot_lang_cat <- ggplot(movie_sample_exploration,
        aes(x=log_budget, y=log_revenue)) +
   geom_point(aes(color=lang_cat)) +
   #geom_point() +
-  geom_smooth(se=FALSE) +
+  geom_smooth(se=FALSE, color="blue") +
   xlab("Budget") +
   ylab("Revenue") +
   xlim(0,200) + 
@@ -351,7 +356,7 @@ anova(model_1, model_2, model_3)
 ```
 
 ## Wald test
-
+We conducted wald test to estimate the significant variables (whether the variables add any value to the model or not) from a set of predictors and found out that budget, vote count, popularity, runtime, movie title length. movie language category and movie release season from model 3 influences the revenue of the movie. 
 ```{r, warning=FALSE, message=FALSE}
 
 model_wald_1 <- lm(log_revenue ~ log_budget + vote_count + popularity + runtime + log_title_length + release_date_cat, data = movie_sample_statistical)

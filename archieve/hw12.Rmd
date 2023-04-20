@@ -1,0 +1,193 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r load packages and set options, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(tidyverse) 
+library(magrittr)
+library(knitr)
+library(patchwork)
+library(moments)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+library(readr)
+```
+
+```{r load data, warning=FALSE, echo=FALSE, results='hide'}
+youtube_data <- read_delim("./data/homework/videos.txt", delim = "\t")
+
+#1. IID Violations 
+#To assess the IID data, we will need to know about the sampling process. From the 'video.txt' file, it is obtained from the youtube api. It has 9618 observations and every video file is uniquely identified by an ID. There are several reasons we might expect the videos to NOT be independent of each other.
+# The age of a particular video might be similar to the age of another video (clustering)
+# The category of one video may be similar to another video (clustering) 
+# The length of one video can be similar to the length of another video (clustering)
+# Views of two videos can be the same. Eg, PW4QZ6bS0yk and PIJSnDiTHbk have same number of views (clustering). 
+# There may also be similar Rate,ratings and comments on the videos (clustering).
+#observations may be related to one another
+#views not popular are discarded 
+
+```
+
+```{r run linear model}
+
+#youtube_data_clean$ln_length <- log(youtube_data_clean$length)
+youtube_data_clean <- na.omit(youtube_data[c("length", "rate", "views")])
+
+youtube_data_clean$ln_views <- log(youtube_data_clean$views)
+
+hist(youtube_data_clean$length, breaks=50, xlim = c(0,1000))
+youtube_data_clean <- youtube_data_clean[youtube_data_clean$length/60 <= 11, ]
+nrow(youtube_data_clean)
+
+model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+
+summary(model)
+
+
+#Linear model 1 between log(views) as an outcome and  rate and length as predictors
+
+```
+
+2. To assess whether there is a linear conditional expectation, we've learned to look at the predicted vs. residuals of the model.
+
+```{r linear conditional expectation,echo=FALSE,warning=FALSE,fig.show='hide'}
+youtube_data_clean %>% 
+  mutate(
+    model_pred = predict(model), 
+    model_resid = resid(model)
+  ) %>% 
+  ggplot(aes(model_pred, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+
+plot(model, which=1)
+```
+
+```{r additinal plots, echo=FALSE, warning=FALSE,fig.show='hide'}
+youtube_data_clean <- youtube_data_clean %>% 
+  mutate(
+    model_preds = predict(model), 
+    model_resid = resid(model)
+  ) 
+
+rate_resids <- youtube_data_clean %>% 
+  ggplot(aes(rate, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+
+length_resids <- youtube_data_clean %>% 
+  ggplot(aes(length, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+
+```
+
+```{r plots}
+rate_resids
+length_resids
+```
+```{r no perfect collinearity, echo=FALSE, results='hide'}
+#First, we can look at our coefficients, and notice that R has not dropped any variables.
+model$coefficients
+#> This tells us that there is no perfect collinearity.  This assumption also includes the requirement that a BLP exists, 
+#> The fact that R has estimated coefficients for both rate and length indicates that there is no perfect collinearity between these two predictors in the model. 
+#> In this case, since R has estimated coefficients for both predictor variables, it means that the rate and length predictors are not an exact linear combination of each other, and the model's coefficients can be estimated without issues related to collinearity.
+```
+
+- Homoskedastic errors
+
+- To assess whether the distribution of the errors is homoskedastic, there are two ways. One is via plots and the second way is via the Breusch-Pagan test (bp test).First We can examine the residuals versus fitted plot. We want to know whether there is a band of even thickness from left to right. Looking at the plot below, indeed, it does look like there might be some decrease in the variance of the residuals on the right side of the predicted values. This demonstrates heteroscedasticity in the model. 
+- The bptest() function in R is used to perform the Breusch-Pagan test. The null hypothesis of the Breusch-Pagan test is that the variance of errors are constant across the range of predictor variables(homoscedasticity).The test result includes a test statistic (BP) and a p-value. If the p-value is less than the chosen significance level (e.g., 0.05), we can reject the null hypothesis of homoscedasticity and conclude that there is evidence of heteroscedasticity in the linear regression model. 
+
+- This heteroscedasticity is fixable by performing log transformations on the length variable. Another way is to examine the scale-location plot. homoscedasticity would show up on this plot as a flat smoothing curve.
+
+```{r residual vs fitted plot, echo=TRUE}
+youtube_data_clean <- na.omit(youtube_data)
+
+#Linear model 1 between log(views) as an outcome and  rate and length as predictors
+youtube_data_clean$ln_views <- log(youtube_data_clean$views)
+model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+
+#plot of prected vs residuals in the model
+youtube_data_clean %>% 
+  mutate(
+    model_pred = predict(model), 
+    model_resid = resid(model)
+  ) %>% 
+  ggplot(aes(model_pred, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+
+#Running bp test on the model
+bptest_result <- bptest(model)
+bptest_result
+
+#Linear model 2 between log(views) as an outcome and  rate and log(length) as predictors
+youtube_data_clean$ln_length <- log(youtube_data_clean$length)
+model_one <- lm(ln_views ~ rate + ln_length, data = youtube_data_clean)
+
+youtube_data_clean %>% 
+  mutate(
+    model_pred = predict(model_one), 
+    model_resid = resid(model_one)
+  ) %>% 
+  ggplot(aes(model_pred, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+
+plot(model, which=3)
+
+```
+
+
+
+```{r homoskedastic errors}
+plot(model_one, which=3)
+```
+
+
+- Normally distributed errors
+Mostly the data points are on the line.This means it has normally distributed errors. 
+From the below plots, it is seen that the histogram of residuals and the qqplot shows normal distribution and the qqplot shows all data points on the line, indicating normally distributed errors.
+```{r qqplots}
+#plot(model, which=2)
+youtube_data_clean <- youtube_data_clean %>% 
+  mutate(
+    model_preds = predict(model), 
+    model_resid = resid(model)
+  ) 
+plot_one <- youtube_data_clean %>% 
+  ggplot(aes(x = model_resid)) + 
+  geom_histogram()
+  
+plot_two <- youtube_data_clean %>% 
+  ggplot(aes(sample = model_resid)) + 
+  stat_qq() + stat_qq_line()
+
+plot_one / plot_two
+```
+3. In addition to the above, assess to what extent (imperfect) collinearity is affecting your inference. 
+
+> The simplest way to do this is to examine the variance inflation factor (VIF) for each coefficient.
+
+```{r vif}
+vif(model)
+```
+
+> Check for correlations in all variables and figure out which one to drop 
+
+```{r, message = FALSE}
+youtube_data_clean %>% 
+  select(rate, length,model_resid) %>% 
+  GGally::ggpairs()
+```

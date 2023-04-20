@@ -1,0 +1,84 @@
+---
+title: "W203 Lab 02 Research Proposal - Team 02"
+author: 'Ayoade Israel, Divya Menghani, Hamsini Sankaran, Sivakumar Thiyagarajan'
+output:
+  pdf_document:
+    toc: no
+    number_sections: yes
+    extra_dependencies: ["float"]
+include-before:
+  - \vspace{-0.6in}
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.1in}
+
+urlcolor: blue
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and set options, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(caret)
+library(ggplot2)
+library(dplyr)
+source("data_cleaning.R")
+options(tinytex.verbose = TRUE)
+```
+
+\quad The movie industry is a huge multi-billion dollar business, with movies created at various budgets ranging from low to high. However, one of the significant factors determining a movie's success is its revenue. In this proposal, we aim to investigate the correlation between the "Budget" and the "Revenue" of the movies. Using an exploratory dataset, we found a graphical relationship between the fields "Revenue" and "Budget" of the movies. Below are the research question, the X concept and the Y concept.
+  \begin{quote}
+    \begin{itemize}
+    \item \textit{Research Question: \textbf{How does the budget of a movie influence its revenue?}}
+    \item \textit{X Concept: Budget (metric)}
+     \item \textit{Y Concept: Revenue (metric)}
+      \end{itemize}
+  \end{quote}
+  
+\quad The key actor of the X concept and the intended audience of the Y concept is the movie production firms. These companies are motivated to enhance their movie revenue (Y concept), and they hold authority over the X concept, which pertains to the budget. The covariates influencing the Y concept "Revenue" are the Number of Cast and Crew (derived from the 'credits' column), Movie length (runtime), Number of production companies (derived from the column production_companies), Genre (genres), and the Release Month(derived from the field release_date).
+
+\quad We gathered the dataset from [Kaggle](https://www.kaggle.com/datasets/akshaypawar7/millions-of-movies). The dataset comprises metadata for more than 700,000 movies listed in the TMDB Dataset. It has 722986 rows and 20 columns. It is relevant and provides an opportunity to analyze the relationship between the budget and the revenue of the movies. The dataset contains unique information on films, with each movie being distinct from the others and identified by an id column in the dataset. Additionally, the distribution of the X and Y concept is identical, satisfying the assumptions of IID. Because each movie is not subject to multiple samplings, the dataset is regarded as cross-sectional.
+
+\quad We operationalize the variables Budget(X) and Revenue(Y) in terms of $ amount.We also need to consider the impact of omitted variables such as the movie's storyline, competition from other movies released on the same date, and the film's rating given by the Motion Picture Association (MPA). The unit of observation of the X concept, Y concept, and the covariates are indicated in the below table.
+```{r warning=FALSE, echo=FALSE, message=FALSE}
+df <- data.frame('Budget'='$ amount', 'Revenue'='$ amount', 'Genre'='movie category', "Movie Length"='minutes', 'Number of Cast and Crew'='count', 'Number of production companies'='count', 'Release Date'='Date', check.names = FALSE) 
+df %>% kable() %>% row_spec(0,bold=TRUE) %>% kable_styling(latex_options="hold_position") %>% kable_styling(latex_options = "scale_down")
+```
+
+```{r load data, echo=FALSE,results='hide', message=FALSE, warning=FALSE}
+movie_data <- read_csv("./datasets/movies_data.csv")
+nrow_original <- nrow(movie_data)
+```
+
+```{r call the dataframe,warning=FALSE, echo=FALSE,results='hide'}
+movie_filtered_df <- data_cleaning()
+nrow_cleaned <- nrow(movie_filtered_df)
+nrow_cleaned
+```
+
+
+\quad We also plotted a correlation heatmap and observed that our X concept is having strong correlation with the Y concept when compared to other covariates. The below plot shows the relationship between the X concept (Budget) and Y concept (Revenue):
+
+```{r data exploration,fig.align='center', fig.height=3, fig.width=5, warning=FALSE, echo=FALSE,message=FALSE}
+# randomly sample 30% of rows from movie_filtered_df
+set.seed(123) # set seed for reproducibility
+#Split data into 30% and 70% using caret's createDataPartition function
+index <- createDataPartition(movie_filtered_df$revenue, p = 0.3, list = FALSE)
+# Create the 30% sample for performing data exploration
+movie_sample_exploration <- movie_filtered_df[index,]
+# Create the 70% sample for performing statistical test
+movie_sample_statistical <- movie_filtered_df[-index,]
+#Create a scatterplot between Budget and Revenue
+ggplot(movie_sample_exploration, aes(x=budget/100000, y=revenue/1000000)) +
+  geom_point(color='darkblue') +
+  xlab("Budget (In millions)") +
+  ylab("Revenue (In millions)") +
+  ggtitle("Budget vs Revenue Scatter Plot") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(labels = scales::comma) +
+  theme(plot.title = element_text(hjust = 0.5,size=10), axis.title = element_text(size=10), legend.title = element_text(size=10))
+```

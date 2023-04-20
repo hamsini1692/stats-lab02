@@ -1,0 +1,110 @@
+---
+title: "Q1.4"
+output:
+  pdf_document:
+    toc: no
+    number_sections: yes
+    extra_dependencies: ["float"]
+include-before:
+  - \vspace{-0.6in}
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.1in}
+
+urlcolor: blue
+---
+```{r load packages and set options, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(tidyverse) 
+library(magrittr)
+library(knitr)
+library(patchwork)
+library(moments)
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(kableExtra)
+library(readr)
+```
+
+```{r load data, message=FALSE, warning=FALSE, echo=FALSE, results='hide'}
+youtube_data <- read_delim("./data/homework/videos.txt", delim = "\t")
+```
+
+```{r linear model, echo=FALSE,warning=FALSE,message=FALSE, results='hide', fig.show='hide'}
+youtube_data_clean <- na.omit(youtube_data[c("length", "rate", "views")])
+
+youtube_data_clean$ln_views <- log(youtube_data_clean$views)
+
+hist(youtube_data_clean$length, breaks=50, xlim = c(0,1000))
+youtube_data_clean <- youtube_data_clean[youtube_data_clean$length/60 <= 11, ]
+nrow(youtube_data_clean)
+model <- lm(ln_views ~ rate + length, data = youtube_data_clean)
+summary(model)
+
+```
+
+- To assess whether the distribution of the errors is Homoscedastic, there are two ways. One is through the "scale-location" plot and the second way is through the Breusch-Pagan test (bp test). Homoscedasticity would show up on the scale-location plot, if the red line on the plot is roughly horizontal. From Figure 1 plot,we see that the spread of the residuals is roughly equal at all the fitted values, highlighting evidences for Homoscedasticity. This plot does not show any strong evidence for heteroscedasticity.
+
+```{r predicted vs fitted, warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "Predicted Vs Residuals", fig.align='center', fig.height=4 }
+plot(model, which=3)
+```
+
+- The bptest() function in R is used to perform the Breusch-Pagan test. The null hypothesis(H0) of the Breusch-Pagan test is that the residuals are Homoscedastic.The alternate hypothesis(Ha) is that the residuals are heteroscedastic. If the p-value from the test is less than the chosen significance level (e.g., 0.05), we can reject the null hypothesis of homoscedasticity. From the bptest results, it is seen that the p-value (2.2e-161) is less than 0.05 and we can reject the null hypothesis and conclude that there is strong evidence of heteroscedasticity in the linear regression model. 
+- The Breusch-Pagan test is a statistical test and a sensitive test and no statistical tests can give perfect results.In this case,the Breusch-Pagan test shows evidences of heteroskedasticity. In this case, due to the large sample size, we should still continue with the model and use effective solutions like  robust standard errors to handle heteroskedasticity.
+
+- Note: The columns having null values are dropped in the dataset. To make the visualization better, the length column in seconds is transformed to minutes. The median views for videos greater than 11 min and videos smaller than 11 mins are very different. This is evident from histogram distribution of the video length variable which is right skewed, hence, the video length greater than 11 min are not significant and are dropped from dataset.
+
+```{r warning=FALSE, message=FALSE, echo=FALSE, fig.cap = "Predicted Vs Residuals", fig.align='center', fig.height=4, fig.show='hide'}
+#plot of prected vs residuals in the model
+#youtube_data_clean %>% 
+#  mutate(
+#    model_pred = predict(model), 
+#    model_resid = resid(model)
+#  ) %>% 
+#  ggplot(aes(model_pred, model_resid)) + 
+#  geom_point() + 
+#  stat_smooth()
+plot(model, which=3)
+```
+
+```{r bp test, echo=FALSE,message=FALSE, warning=FALSE}
+#Running bp test on the model
+bptest_result <- bptest(model)
+# Capturing output of bptest() function as character vector
+bp_output <- capture.output(bptest_result)
+
+# Formatting output using cat()
+cat("Breusch-Pagan Test Results\n")
+cat(bp_output)
+```
+
+```{r log transformation, echo=FALSE, message=FALSE, fig.show='hide', fig.align='center', fig.height=3, warning=FALSE}
+#Linear model 2 between log(views) as an outcome and  rate and log(length) as predictors
+youtube_data_clean$ln_length <- log(youtube_data_clean$length)
+model_one <- lm(ln_views ~ rate + ln_length, data = youtube_data_clean)
+
+
+youtube_data_clean %>% 
+  mutate(
+    model_pred = predict(model_one), 
+    model_resid = resid(model_one)
+  ) %>% 
+  ggplot(aes(model_pred, model_resid)) + 
+  geom_point() + 
+  stat_smooth()
+```
+
+```{r scale location plot,echo=FALSE, warning=FALSE, message=FALSE, fig.cap = "scale-location plot", fig.align='center', fig.height=3, fig.show='hide'}
+plot(model)
+hist(model$residuals)
+#plot(model)
+```
+
+

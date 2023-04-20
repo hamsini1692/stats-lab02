@@ -1,0 +1,117 @@
+---
+title: "Q1.3 Linear Conditional Expectation"
+output:
+  pdf_document:
+    toc: no
+    number_sections: yes
+    extra_dependencies: ["float"]
+include-before:
+  - \vspace{-0.6in}
+header-includes:
+  - \usepackage{titling}
+  - \setlength{\droptitle}{-1.1in}
+
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages and set options, include=FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+library(readr)
+library(tidyverse)
+library(kableExtra)
+library(caret)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(SciViews)
+library(patchwork)
+options(tinytex.verbose = TRUE)
+```
+
+```{r load input dataset, warning=FALSE, echo=FALSE, message=FALSE}
+df_youtube <- read_delim("./data/homework/videos.txt", delim="\t")
+
+# omit all rows containing missing values
+df_youtube <- na.omit(df_youtube)
+
+# count the number of records in the dataset
+#nrow(df_youtube)
+
+df_youtube$log_views <- ln(df_youtube$views)
+
+youtube_data_clean <- df_youtube[df_youtube$length/60 <= 11, ]
+```
+
+
+
+\textbf{Assumption:}
+The assumption of linearity means that the conditional expectation function of the response variable given the values of the predictor variables can be represented by a linear combination of the predictor variables. In other words, the relationship between the response variable and the predictor variables is linear.
+
+
+
+\textbf{Evaluating the Assumption:}
+
+To assess the linear conditional expectation of the given higher dimensional youtube video dataset, we can use the plot between predictors vs. residuals of the model. Here, a linear model is created with the predictor (rate & length) variables and target (ln(views)) variable. The residuals are computed for the predictors of the model.
+
+```{r run liner model, echo=FALSE, warning=FALSE, message=FALSE}
+lm_model <- lm(log_views ~ rate + length, data = youtube_data_clean)
+
+youtube_data_clean <- youtube_data_clean %>% 
+  mutate(    
+    model_predictions = predict(lm_model), 
+    model_residuals   = resid(lm_model)
+    )
+
+```
+
+
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, fig.height=3.25, fig.width=3.25}
+plot_model_views <- youtube_data_clean %>%  
+  ggplot(aes(x = youtube_data_clean$model_predictions, y = youtube_data_clean$model_residuals)) + 
+  xlab("Predictions") +
+  ylab("Residuals") +
+  geom_point() + stat_smooth() + 
+  theme(plot.title = element_text(hjust = 0.5,size=9), axis.title = element_text(size=9), legend.title = element_text(size=9))
+
+plot_model_rate <- youtube_data_clean %>%  
+  ggplot(aes(x = youtube_data_clean$rate, y = youtube_data_clean$model_residuals)) + 
+  xlab("Rate") +
+  ylab("Residuals") +
+  geom_point() + stat_smooth() + 
+  theme(plot.title = element_text(hjust = 0.5,size=9), axis.title = element_text(size=9), legend.title = element_text(size=9))
+
+plot_model_length <- youtube_data_clean %>%  
+  ggplot(aes(x = youtube_data_clean$length, y = youtube_data_clean$model_residuals)) + 
+  xlab("Length") +
+  ylab("Residuals") +
+  geom_point() + stat_smooth() + 
+  theme(plot.title = element_text(hjust = 0.5,size=9), axis.title = element_text(size=9), legend.title = element_text(size=9))
+
+plot_fitted <- plot(lm_model, which=1)
+
+#plot_model_views
+
+#plot_model_rate
+
+#plot_model_length
+
+(plot_model_views) / (plot_model_rate | plot_model_length)
+
+#grid.arrange(plot_model_views, ncol=1)
+#grid.arrange(plot_model_rate, plot_model_length, ncol=2)
+
+```
+
+
+
+\textbf{Inference:}
+
+From the Residual vs Fitted and Predictions vs Residual plots, the expected mean of the residuals is around zero for most of the data points but there is squiggle at the end of the plot where most of the data points are concentrated. Visual inspection of these plots could be subjective. But if we take the squiggle at the end of the plot into consideration where most data points reside, this could be a violation in the assumption of the Linearity Conditional Expectation.
+
+
+\underline{Note:} The columns having null values are dropped in the dataset. To make the visualization better, the length column in seconds is transformed to minutes. The median views for videos greater than 11 min and videos smaller than 11 mins are very different. This is evident from histogram distribution of the video length variable which is right skewed, hence, the video length greater than 11 min are not significant and are dropped from dataset.
+
